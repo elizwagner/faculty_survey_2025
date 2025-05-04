@@ -1,0 +1,15 @@
+name: "2025 Faculty Survey"
+output_dir: "docs"
+navbar:
+  title: "2025 Faculty Survey Responses"
+  left:
+    - text: "Home"
+      href: index.html
+    - text: "Proportions"
+      href: proportions.html
+    - text: "Differences"
+      href: differences.html
+    - text: "Free Write"
+      href: free-write.html
+    - text: "General Info"
+      href: gen-info.html

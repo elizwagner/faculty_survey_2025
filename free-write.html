@@ -1,0 +1,2272 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Free-Write Word Analyses</title>
+
+<script src="site_libs/header-attrs-2.29/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">2025 Faculty Survey Responses</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="proportions.html">Proportions</a>
+</li>
+<li>
+  <a href="differences.html">Differences</a>
+</li>
+<li>
+  <a href="free-write.html">Free Write</a>
+</li>
+<li>
+  <a href="gen-info.html">General Info</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Free-Write Word Analyses</h1>
+
+</div>
+
+
+<div id="i.-general-positive-feedback" class="section level1">
+<h1>I. General Positive Feedback</h1>
+<p><em>The following summarizes the most frequently mentioned themes in
+the free-write prompts, focusing on individual responses about what is
+going well overall.</em></p>
+<table class="table table-hover table-condensed table-bordered" style="color: black; width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+Summary of Positive Feedback from Faculty Survey
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+Question
+</th>
+<th style="text-align:center;">
+Theme
+</th>
+<th style="text-align:left;">
+Quote
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;width: 6em; ">
+Comments on the recent retitling process
+</td>
+<td style="text-align:center;width: 10em; ">
+Positive Experiences with Titles and Recognition
+</td>
+<td style="text-align:left;width: 54em; ">
+<ul>
+<li>
+“The retitling process was comprehensive and significant improvements
+have been made. The new requirement for inter folio review/posting for
+NTT , and the equity ranges now published are also significant in
+bringing us forward.”
+</li>
+<li>
+“As someone re-titled into a new NTT title, I appreciate that the title
+is better understood outside Hopkins — especially important for grants.”
+</li>
+<li>
+“I think it was a step in the right direction and was appreciated by
+many.., the ability to advise students was really important and
+appreciated.”
+</li>
+</ul>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 6em; ">
+Steps chairs or leadership could take to improve job satisfaction
+</td>
+<td style="text-align:center;width: 10em; ">
+Positive Feedback on Chairs and Leadership
+</td>
+<td style="text-align:left;width: 54em; ">
+<ul>
+<li>
+“I appreciate all that the chair of DIH is doing to listen to his
+people! We are a big unruly community… and a tough group to wrangle
+together.”
+</li>
+<li>
+“I’ve been in several departments and fields and my chair is far and
+above the best leader I’ve worked under…”
+</li>
+<li>
+“I think our chair has done a great job so far fixing many of the
+problems in our department. I appreciate how he highlights achievements
+like teaching awards and new grants for faculty — this costs nothing and
+it means a great deal.”
+</li>
+</ul>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 6em; ">
+Things BSPH could do to support health and well-being
+</td>
+<td style="text-align:center;width: 10em; ">
+Positive Feedback on Flexibility and Well-being Support
+</td>
+<td style="text-align:left;width: 54em; ">
+<ul>
+<li>
+“Flexible work schedule and work from home policies… is greatly
+appreciated.”
+</li>
+<li>
+“BSPH has been a good employer — good benefits, good environment, lots
+of opportunities for those who want to seize them.”
+</li>
+<li>
+“BSPH seems uniquely focused on faculty health and well-being, I think
+this is something the school… does well.”
+</li>
+</ul>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 6em; ">
+Feedback on workload, roles, responsibilities, rewards of NTT faculty
+</td>
+<td style="text-align:center;width: 10em; ">
+Positive Experiences with Roles and Support
+</td>
+<td style="text-align:left;width: 54em; ">
+<ul>
+<li>
+“I appreciate the flexibility in devoting my time to research because
+it’s what I love.”
+</li>
+<li>
+“I genuinely appreciate the school’s commitment to increasing salaries
+of NTT RPT faculty this past year to be more commensurate with the roles
+and competitive with other universities.”
+</li>
+<li>
+“I think departments should learn from each other and share positive
+experiences on how to make NTT faculty feel appreciated and motivated.”
+</li>
+</ul>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 6em; ">
+Topics or issues for Faculty Senate to address
+</td>
+<td style="text-align:center;width: 10em; ">
+Positive Feedback on Faculty Senate
+</td>
+<td style="text-align:left;width: 54em; ">
+<ul>
+<li>
+“The senate has been doing a wonderful job of highlighting issues, as
+reflected in this survey.”
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="ii.-general-constructive-feedback-by-question"
+class="section level1">
+<h1>II. General Constructive Feedback by Question</h1>
+<p><em>The following is an attempt to provide a general picture of what
+was most mentioned in the free-write prompts, using overall individual
+responses focused was on concerns, challenges, changes, and areas that
+need improvement.</em></p>
+<div
+id="please-share-any-comments-or-concerns-you-have-regarding-the-recent-re-titling-process."
+class="section level2">
+<h2>1. Please share any comments or concerns you have regarding the
+recent re-titling process.</h2>
+<table class="table table-hover table-condensed table-bordered" style="color: black; width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+Summary of Retitling Feedback (Expanded)
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+Theme
+</th>
+<th style="text-align:center;">
+Description
+</th>
+<th style="text-align:left;">
+Quote
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;width: 6em; ">
+Confusion &amp; Complexity
+</td>
+<td style="text-align:center;width: 10em; ">
+More titles, more confusion about roles
+</td>
+<td style="text-align:left;width: 54em; ">
+<ul>
+<li>
+“All it did was increase the number of titles and thus, the confusion.”
+</li>
+<li>
+“While the retitling helped a lot of faculty with awkward titles that
+did not accurately reflect their roles at the school, many are still
+‘stuck’ in titles that don’t make sense.”
+</li>
+</ul>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 6em; ">
+Equity &amp; Compensation
+</td>
+<td style="text-align:center;width: 10em; ">
+Retitling didn’t improve pay or equity; NTT burdens unrecognized
+</td>
+<td style="text-align:left;width: 54em; ">
+<ul>
+<li>
+“Salary adjustments were a joke… non-TT faculty are trying to leave in
+droves.”
+</li>
+<li>
+“The re-titling process has done little to elevate and show appreciation
+for the hidden institutional burden that NTT faculty shoulder for the
+institution writ large.”
+</li>
+<li>
+“The re-titling process failed to address the core issue, which is that
+we have NTT faculty who are doing the same work as TT faculty… but are
+treated very differently and inequitably.”
+</li>
+<li>
+“…it feels like there is potential for lower pay or discrepancies based
+on whether one is research or practice based.”
+</li>
+</ul>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 6em; ">
+Transparency &amp; Consistency
+</td>
+<td style="text-align:center;width: 10em; ">
+Unclear, inconsistent processes across departments
+</td>
+<td style="text-align:left;width: 54em; ">
+<ul>
+<li>
+“Implementation of retitling was inequitable between departments and
+within departments.”
+</li>
+<li>
+“Lack of transparency in process and inability to hire into research
+professor role.”
+</li>
+<li>
+“Plan for non-expedited process not defined and feels subjective, not
+standard between departments.”
+</li>
+</ul>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 6em; ">
+Role-Responsibility &amp; Research Assoc. Mismatch
+</td>
+<td style="text-align:center;width: 10em; ">
+Blended roles, RA ranks, and mismatched titles create barriers
+</td>
+<td style="text-align:left;width: 54em; ">
+<ul>
+<li>
+“…effectively demoted anyone who remained in the Scientist track… and
+seems to reinforce the sentiment that Scientists are basically staff.”
+</li>
+<li>
+“Research Associates were ignored and excluded.”
+</li>
+<li>
+“Why has the ‘Assistant Scientist’ title been retained? It hinders
+faculty in submissions because it doesn’t sound like a doctoral-level
+faculty position.”
+</li>
+<li>
+“The titles remain inaccurate — NTT research professorial roles need to
+teach AND do research, so ‘Research X Professor’ is not accurate.”
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="what-are-your-largest-concerns-around-job-security"
+class="section level2">
+<h2>2. What are your largest concerns around job security?</h2>
+<p><img src="free-write_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<table class="table table-hover table-condensed table-bordered" style="color: black; width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+Themes in Job Security Concerns
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+Theme
+</th>
+<th style="text-align:center;">
+Description
+</th>
+<th style="text-align:left;">
+Quote
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;width: 5em; ">
+Soft‐Money Dependency
+</td>
+<td style="text-align:center;width: 15em; ">
+Heavy reliance on external grants, lack of diversified funding, no
+protected time for grant writing
+</td>
+<td style="text-align:left;width: 50em; ">
+<ul>
+<li>
+“Being 100% dependent on grants for salary support.”
+</li>
+<li>
+“A soft money environment when we receive no protected time to write
+grants is extremely challenging.”
+</li>
+<li>
+“…I also find that it means that a promotion, with an increase in pay,
+is also marketed as a ‘bad’ or ‘selfish’ thing, since it means that more
+money has to be taken out of the grant.”
+</li>
+</ul>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 5em; ">
+Political Uncertainty
+</td>
+<td style="text-align:center;width: 15em; ">
+Concerns over shifting federal priorities and potential budget cuts
+impacting NIH, CDC, and philanthropic funds
+</td>
+<td style="text-align:left;width: 50em; ">
+<ul>
+<li>
+“The political environment poses a risk to future government funding… As
+a result, the faculty here is losing its competitive edge.”
+</li>
+<li>
+“…Also, work in health equity or structural racism will be under direct
+threat. Without institutional support to buffer these changes, I don’t
+know how I will be able to be in academia.”
+</li>
+<li>
+“(The) political climate not conducive to international students.”
+</li>
+</ul>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 5em; ">
+Support &amp; Resources
+</td>
+<td style="text-align:center;width: 15em; ">
+Lack of departmental communication, safety nets, restrictive finance
+policies, and insufficient administrative resources
+</td>
+<td style="text-align:left;width: 50em; ">
+<ul>
+<li>
+“I don’t feel that the school has provided any level of assurance that
+they will try to alleviate funding shortfalls.”
+</li>
+<li>
+“The fact that we cannot bank funds when we are overfunded is really
+challenging as it would help to offset times when we are underfunded.”
+</li>
+<li>
+“I perform a lot of administrative duties that are outside the scope of
+my job description because there is inadequate support from the
+division/department.”
+</li>
+</ul>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 5em; ">
+Career Progression &amp; Tenure
+</td>
+<td style="text-align:center;width: 15em; ">
+Uncertainty, delays in promotion, unclear promotion guidelines, and lack
+of start-up support for NTT roles
+</td>
+<td style="text-align:left;width: 50em; ">
+<ul>
+<li>
+“My promotion to full professor has been under review for 14 months.
+They say that is just how it goes, but I worry.”
+</li>
+<li>
+“Lack of clarity on promotion process requirements, appears very
+subjective.”
+</li>
+<li>
+“As an Assistant Scientist… I received feedback that they doubt the
+institution’s commitment because of my non‐tenure track role and lack of
+start‐up funds.”
+</li>
+</ul>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 5em; ">
+Work Life Stress Factors
+</td>
+<td style="text-align:center;width: 15em; ">
+High workload pressures, limited time to work on necessary things
+outside finding grants; turnover and poor work-life balance; not being
+paid enough despite working long hours
+</td>
+<td style="text-align:left;width: 50em; ">
+<ul>
+<li>
+“Why is our expected percent effort so much higher than other
+institutions (even Harvard)? This is why we have had so much turnover.”
+</li>
+<li>
+“Now I have to take on many projects (5 for now) to cover my salary.
+It’s exhausting.”
+</li>
+<li>
+“I think my contributions are valued, but I feel like I can’t keep up
+with my work load, let alone find time to write grants.”
+</li>
+</ul>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 5em; ">
+Personal &amp; Life‐Stage Stress Factors
+</td>
+<td style="text-align:center;width: 15em; ">
+Retirement planning, family, visa concerns
+</td>
+<td style="text-align:left;width: 50em; ">
+<ul>
+<li>
+“Tenure at the full professor level means living with uncertainty for a
+decade or more, especially for female faculty due to childbirth-related
+extensions and the unequal burden they often have to take to raise
+children.”
+</li>
+<li>
+“Lack of job safety especially on H1B visa and being here with a
+family.”
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="how-do-you-think-faculty-compensation-should-be-determined"
+class="section level2">
+<h2>3. How do you think faculty compensation should be determined?</h2>
+<p><img src="free-write_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<table class="table table-hover table-condensed table-bordered" style="color: black; width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+Themes in Faculty Compensation Preferences
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+Theme
+</th>
+<th style="text-align:center;">
+Description
+</th>
+<th style="text-align:left;">
+Quote
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;width: 5em; ">
+Composite Performance
+</td>
+<td style="text-align:center;width: 15em; ">
+Holistic evaluation across teaching, research, practice, and service.
+</td>
+<td style="text-align:left;width: 50em; ">
+<ul>
+<li>
+“Based on a composite of value provided to the university and field
+including: funding, productivity, teaching, area of expertise.”
+</li>
+<li>
+“Overall contributions to Dept and School—research, teaching, practice,
+service collectively.”
+</li>
+<li>
+“Based on your total contributions in teaching, research and/or
+practice.”
+</li>
+<li>
+“Overall value—which can be in teaching, service, practice, or research
+grants.”
+</li>
+</ul>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 5em; ">
+Productivity &amp; Output Metrics
+</td>
+<td style="text-align:center;width: 15em; ">
+Measured by grant funding, publications, courses taught, and projects.
+</td>
+<td style="text-align:left;width: 50em; ">
+<ul>
+<li>
+“Based on the productivity, which is not only papers published, it also
+includes grant money, the number and sizes of courses taught.”
+</li>
+<li>
+“Combo of productivity, skillsets, and grant money secured.”
+</li>
+<li>
+“Based on the quality and efficiency of work done.”
+</li>
+</ul>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 5em; ">
+Market &amp; External Benchmarking
+</td>
+<td style="text-align:center;width: 15em; ">
+Comparing salaries to market rates and peer institutions.
+</td>
+<td style="text-align:left;width: 50em; ">
+<ul>
+<li>
+“Based on salaries in comparable institutions.”
+</li>
+<li>
+“Peer institution salaries.”
+</li>
+<li>
+“Market rate, competing offer.”
+</li>
+</ul>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 5em; ">
+Equity &amp; Fairness
+</td>
+<td style="text-align:center;width: 15em; ">
+Ensuring equity across ranks and recognition of supervisory duties.
+</td>
+<td style="text-align:left;width: 50em; ">
+<ul>
+<li>
+“Equity within rank and impact.”
+</li>
+<li>
+“Not strictly money you bring in through grants—but some recognition of
+supervisory/fiscal responsibilities for staff/programs and the added
+stress of those responsibilities.”
+</li>
+<li>
+“Equity considerations.”
+</li>
+</ul>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 5em; ">
+Experience &amp; Seniority
+</td>
+<td style="text-align:center;width: 15em; ">
+Accounting for experience, responsibility level, and seniority.
+</td>
+<td style="text-align:left;width: 50em; ">
+<ul>
+<li>
+“Level/years of experience (including prior to joining JHU).”
+</li>
+<li>
+“Total professional experience.”
+</li>
+<li>
+“Work experience (including non-JHU experience).”
+</li>
+</ul>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 5em; ">
+Leadership &amp; Service
+</td>
+<td style="text-align:center;width: 15em; ">
+Recognition of service roles, mentorship, and departmental
+contributions.
+</td>
+<td style="text-align:left;width: 50em; ">
+<ul>
+<li>
+“By your service to the department—teaching, mentoring, committee work,
+etc.”
+</li>
+<li>
+“Contributions to the department (advising, directing programs, serving
+on committees).”
+</li>
+<li>
+“Level of service to the School.”
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div
+id="imagine-that-there-are-clear-performance-metrics-for-a-non-tenure-track-job-description.-for-ntt-who-exceed-metrics-how-would-you-prefer-for-them-to-be-compensatedrecognized"
+class="section level2">
+<h2>4. Imagine that there are clear performance metrics for a non-tenure
+track job description. For NTT who exceed metrics, how would you prefer
+for them to be compensated/recognized?</h2>
+<table class="table table-hover table-condensed table-bordered" style="color: black; width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+Preferences for Recognizing NTT Faculty Who Exceed Performance Metrics
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+Theme
+</th>
+<th style="text-align:center;">
+Description
+</th>
+<th style="text-align:left;">
+Quote
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;width: 5em; ">
+Financial Incentives &amp; Bonuses
+</td>
+<td style="text-align:center;width: 15em; ">
+Access to discretionary accounts, bonuses, salary increases, and
+effort-based general fund support
+</td>
+<td style="text-align:left;width: 50em; ">
+<ul>
+<li>
+“Discretionary accounts PLEASE!!!”
+</li>
+<li>
+“Salary increase would come with promotion…reasonable to give
+bonuses/discretionary account increases for good work.”
+</li>
+<li>
+“TT have more general fund support than NTT. GF support should be
+effort-based rather than tenure-based.”
+</li>
+</ul>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 5em; ">
+Parity &amp; Policy Alignment
+</td>
+<td style="text-align:center;width: 15em; ">
+Apply consistent policies and search processes as tenure-track faculty
+</td>
+<td style="text-align:left;width: 50em; ">
+<ul>
+<li>
+“Non-tenure track faculty should ALWAYS be eligible to apply for
+tenure-track positions. They should NEVER be ‘promoted’ to the tenure
+track without a fair search.”
+</li>
+<li>
+“Consider if promotion, application to a different faculty position, or
+change in activities is appropriate…”
+</li>
+</ul>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 5em; ">
+Promotion &amp; Career Advancement
+</td>
+<td style="text-align:center;width: 15em; ">
+Accelerated promotion pathways and earning credits toward next rank when
+metrics are exceeded
+</td>
+<td style="text-align:left;width: 50em; ">
+<ul>
+<li>
+“Promotion within NTT ranks”
+</li>
+<li>
+“Earning credits towards promotion”
+</li>
+</ul>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 5em; ">
+Recognition &amp; Non-monetary Awards
+</td>
+<td style="text-align:center;width: 15em; ">
+Certificates, public acknowledgment, and non-monetary tokens of
+appreciation
+</td>
+<td style="text-align:left;width: 50em; ">
+<ul>
+<li>
+“Certificates of recognition for outstanding achievement.”
+</li>
+<li>
+“Non monetary recognition would be a nice touch.”
+</li>
+</ul>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 5em; ">
+Tailored &amp; Flexible Options
+</td>
+<td style="text-align:center;width: 15em; ">
+Individualized choice of reward format and protected time for
+professional development
+</td>
+<td style="text-align:left;width: 50em; ">
+<ul>
+<li>
+“The person should have input on how they are compensated.”
+</li>
+<li>
+“Protected time for professional development.”
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div
+id="what-steps-could-be-taken-by-your-chair-or-bsph-leadership-to-improve-your-job-andor-job-satisfaction"
+class="section level2">
+<h2>5. What steps could be taken by your chair or BSPH leadership to
+improve your job and/or job satisfaction?</h2>
+<table class="table table-hover table-condensed table-bordered" style="color: black; width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+Summary of General Feedback for Job Improvement by BSPH
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+Theme
+</th>
+<th style="text-align:center;">
+Description
+</th>
+<th style="text-align:left;">
+Quote
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;width: 5em; ">
+Compensation &amp; Financial Support
+</td>
+<td style="text-align:center;width: 15em; ">
+Soft‐money burdens and pay inequities; need for more
+hard‐money/discretionary funds; inadequate compensation for activities
+outside research
+</td>
+<td style="text-align:left;width: 50em; ">
+<ul>
+<li>
+“PAY. ME. MORE. The number one thing way above all others is pay. I am
+working so hard and still living paycheck to paycheck.”
+</li>
+<li>
+“I need more hard money. The reason we have had so much turnover is that
+people are going to institutions where they don’t have to try to get as
+many grants.”
+</li>
+<li>
+“Increase my pay to be equivalent with my performance and
+responsibilities.”
+</li>
+</ul>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 5em; ">
+Administrative Burden, Staff, &amp; Infrastructure
+</td>
+<td style="text-align:center;width: 15em; ">
+Offload paperwork/grant logistics; clearer HR, stronger staff support
+and better systems
+</td>
+<td style="text-align:left;width: 50em; ">
+<ul>
+<li>
+“Improve our financial administration and provide more administrative
+support to faculty.”
+</li>
+<li>
+“Staff turnover creates so much work for me that is unnecessary.”
+</li>
+<li>
+“FIX HR… This impacts ME, it impacts my students, it impacts my
+collaborating faculty, and it puts more work on the overworked and
+undervalued staff.”
+</li>
+</ul>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 5em; ">
+Career Trajectory
+</td>
+<td style="text-align:center;width: 15em; ">
+Transparent promotion pathways with measurable targets (papers, grants,
+teaching); advancement opportunities
+</td>
+<td style="text-align:left;width: 50em; ">
+<ul>
+<li>
+“Base our promotions on something clear and measurable beyond just how
+many years we’ve worked here.”
+</li>
+<li>
+“VALUE STAFF and provide them with opportunities for advancement that we
+as their PIs who fund them have guidance to allow us to WRITE THE
+PROMOTIONS INTO OUR GRANTS.”
+</li>
+<li>
+“The promotion criteria within the scientist track are unclear. Despite
+having been promoted once, I still don’t fully understand what changed
+from one year to the next.”
+</li>
+</ul>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 5em; ">
+Transparency &amp; Communication
+</td>
+<td style="text-align:center;width: 15em; ">
+Regular check‐ins, open decision‐making, discussion of ongoing issues,
+accessible leadership, clear policy dissemination; mentorship
+assignments and faculty recognition
+</td>
+<td style="text-align:left;width: 50em; ">
+<ul>
+<li>
+“Have a semi‐annual check‐in to discuss effort distribution and progress
+toward goals. BSPH needs transparency in decisions.”
+</li>
+<li>
+“Identify and acknowledge the inequities in the Department based on
+status, title, sex and discuss them in an open forum.”
+</li>
+<li>
+“Better communication with faculty re: implementation of the CBA and
+recognition of the added work and risk faculty are being asked to take
+on.”
+</li>
+</ul>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 5em; ">
+Community, Mentorship &amp; Culture
+</td>
+<td style="text-align:center;width: 15em; ">
+Peer‐mentoring, newcomer orientation, social events, chair visibility to
+build belonging
+</td>
+<td style="text-align:left;width: 50em; ">
+<ul>
+<li>
+“Find and implement ways for faculty to feel connected… start
+peer‐mentoring groups and in‐person orientation.”
+</li>
+<li>
+“Formal mentoring - clear description of how I could move to practice
+professor track since I’ve been told that’s where I should probably be.”
+</li>
+<li>
+“Continued support of departmental social events to build community and
+connection.”
+</li>
+</ul>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 5em; ">
+Community, Mentorship &amp; Culture
+</td>
+<td style="text-align:center;width: 15em; ">
+Peer‐mentoring, newcomer orientation, social events, chair visibility to
+build belonging
+</td>
+<td style="text-align:left;width: 50em; ">
+<ul>
+<li>
+“Find and implement ways for faculty to feel connected… start
+peer‐mentoring groups and in‐person orientation.”
+</li>
+<li>
+“Formal mentoring - clear description of how I could move to practice
+professor track since I’ve been told that’s where I should probably be.”
+</li>
+<li>
+“Continued support of departmental social events to build community and
+connection.”
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div
+id="what-are-some-of-the-most-useful-or-important-things-bsph-could-do-to-support-your-health-and-well-being"
+class="section level2">
+<h2>6. What are some of the most useful or important things BSPH could
+do to support your health and well-being?</h2>
+<table class="table table-hover table-condensed table-bordered" style="color: black; width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+Summary of BSPH Health &amp; Well-Being Feedback
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+Theme
+</th>
+<th style="text-align:center;">
+Description
+</th>
+<th style="text-align:left;">
+Quote
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;width: 5em; ">
+Financial &amp; Benefits
+</td>
+<td style="text-align:center;width: 15em; ">
+Fair pay, salary equity, hard-money support, and improved benefits
+</td>
+<td style="text-align:left;width: 50em; ">
+<ul>
+<li>
+“Adequate pay (including transparency around promotion and salary
+increases).”
+</li>
+<li>
+“Raise endowment funding that provides hard money support for faculty.”
+</li>
+<li>
+“Solve the PhD student funding crisis.”
+</li>
+</ul>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 5em; ">
+Administrative &amp; Operational
+</td>
+<td style="text-align:center;width: 15em; ">
+Reduce paperwork and streamline HR/grant systems to free up faculty time
+</td>
+<td style="text-align:left;width: 50em; ">
+<ul>
+<li>
+“Dramatically reduce administrative burden. Address concerns of faculty
+when they are voiced and not ignored.”
+</li>
+<li>
+“Stop asking me to do random service stuff. I’m busy chasing money, so
+get somebody who doesn’t have to do that to do this fluffy stuff.”
+</li>
+<li>
+“Understand the administrative burden that is placed on faculty and
+work… so that faculty can actually do the work they are supposed to do.”
+</li>
+</ul>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 5em; ">
+Work-life Balance
+</td>
+<td style="text-align:center;width: 15em; ">
+Enforce no-meeting days, clear vacation policies, flexible schedules
+</td>
+<td style="text-align:left;width: 50em; ">
+<ul>
+<li>
+“Stop normalizing work weeks of over 40 hours… expectations need to be
+40 hours, not 70–80.”
+</li>
+<li>
+“Needs to be more accommodation for work-life balance - besides “no
+meeting” days and “have a relaxing summer” messaging.”
+</li>
+</ul>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 5em; ">
+Community &amp; Support
+</td>
+<td style="text-align:center;width: 15em; ">
+Shared spaces, social events, and mental-health resources
+</td>
+<td style="text-align:left;width: 50em; ">
+<ul>
+<li>
+“Provide opportunities to foster community for faculty.”
+</li>
+<li>
+“Provide mental health resources for faculty during stressful times
+(it’s not just students who are affected).”
+</li>
+</ul>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 5em; ">
+Resources &amp; Environment
+</td>
+<td style="text-align:center;width: 15em; ">
+Access to equipment, dining areas, gyms, and safe physical workplaces
+</td>
+<td style="text-align:left;width: 50em; ">
+<ul>
+<li>
+“Provide support for major equipment… a faculty dining area to
+discourage hiding in offices.”
+</li>
+<li>
+“Increase green space; promote fitness and exercise options.”
+</li>
+</ul>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 5em; ">
+Transparency &amp; Communication
+</td>
+<td style="text-align:center;width: 15em; ">
+Open decision-making, clear policies, regular check-ins and safe
+channels
+</td>
+<td style="text-align:left;width: 50em; ">
+<ul>
+<li>
+“Clear communication and support in response to current events;
+acknowledge available resources for faculty.”
+</li>
+<li>
+“Provide recommendations on how to improve health and well-being from
+Dean’s office.”
+</li>
+</ul>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 5em; ">
+Mentoring
+</td>
+<td style="text-align:center;width: 15em; ">
+Formal mentoring programs, independent pathways, and cross-departmental
+connections
+</td>
+<td style="text-align:left;width: 50em; ">
+<ul>
+<li>
+“Formal mentoring. Clear guidance for how I can work independently from
+my faculty sponsor.”
+</li>
+<li>
+“Intentional building of mentorship and community within departments and
+between departments.”
+</li>
+<li>
+“Provide remuneration and mentorship to those who are most vulnerable.”
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div
+id="what-topics-or-issues-would-you-like-faculty-senate-to-address-in-the-next-two-years"
+class="section level2">
+<h2>7. What topics or issues would you like Faculty Senate to address in
+the next two years?</h2>
+<p><img src="free-write_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<table class="table table-hover table-condensed table-bordered" style="color: black; width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+Summary of Topics for the Faculty Senate Over the Next Two Years
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+Theme
+</th>
+<th style="text-align:center;">
+Description
+</th>
+<th style="text-align:left;">
+Quotes
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;width: 5em; ">
+Administrative Burden &amp; Bureaucracy
+</td>
+<td style="text-align:center;width: 15em; ">
+Excessive admin tasks and HR delays that steal faculty time
+</td>
+<td style="text-align:left;width: 50em; ">
+<ul>
+<li>
+“Administrative burden / rote email overload / lack of administrative
+support.”
+</li>
+<li>
+“The amount of administrative burden is unbearable. The attitude of
+admin, from HR, to facilities, to departmental admins, is disrespectful
+to faculty.”
+</li>
+<li>
+“Developing an HR department that supports the mission of our faculty
+and school. Fix JHURA - major delays.”
+</li>
+</ul>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 5em; ">
+Compensation, Benefits, and Equity
+</td>
+<td style="text-align:center;width: 15em; ">
+Transparent, fair pay and salary parity (especially for NTT vs TT roles)
+</td>
+<td style="text-align:left;width: 50em; ">
+<ul>
+<li>
+“Adequate pay (including transparency around promotion and salary
+increases).”
+</li>
+<li>
+“Salary equity between ranks &amp; departments.”
+</li>
+<li>
+“Fair pay and stable commitments to junior faculty, tenure and
+non-tenure track..”
+</li>
+</ul>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 5em; ">
+NTT Faculty &amp; Career Pathways
+</td>
+<td style="text-align:center;width: 15em; ">
+Standards for non-tenure track titles, promotion processes, and pathways
+to tenure
+</td>
+<td style="text-align:left;width: 50em; ">
+<ul>
+<li>
+“Continue the work of the NTT subcommittee to address issues faced by
+NTT faculty beyond just the retitling.”
+</li>
+<li>
+“Creating pathways for transitioning from non-tenured to tenured
+positions.”
+</li>
+</ul>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 5em; ">
+Funding &amp; Financial Sustainability
+</td>
+<td style="text-align:center;width: 15em; ">
+Stable grant support, general funds, IDC returns, and a
+research-friendly financial model
+</td>
+<td style="text-align:left;width: 50em; ">
+<ul>
+<li>
+“Advocating for more guaranteed salary support… funding model is not
+sustainable.”
+</li>
+<li>
+“Pushing for transparent formulas for general funds support for faculty
+in all departments.”
+</li>
+<li>
+“Strategic plan in the event that NIH funding will be cut in the new
+administration… the University and School have been largely silent about
+how they are planning for this.”
+</li>
+</ul>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 5em; ">
+CBA Impacts &amp; Student Relations
+</td>
+<td style="text-align:center;width: 15em; ">
+Effects of the CBA on teaching loads, TA availability, and grad-student
+accommodations
+</td>
+<td style="text-align:left;width: 50em; ">
+<ul>
+<li>
+“The CBA… fundamentally changed the relationship between students and
+advisors.”
+</li>
+<li>
+“A voice for faculty to inform BSPH policies and procedures related to
+the CBA.”
+</li>
+<li>
+“There are many impacts to faculty due to the CBA, including increased
+workload, fewer TA hours, fewer PhD students.”
+</li>
+</ul>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 5em; ">
+Support &amp; Well-Being
+</td>
+<td style="text-align:center;width: 15em; ">
+Faculty mental health, mentoring programs, and work–life balance
+initiatives
+</td>
+<td style="text-align:left;width: 50em; ">
+<ul>
+<li>
+“Faculty mental health and well being; School culture; salary equity;
+protection of our faculty.”
+</li>
+<li>
+“Faculty mental health, support for faculty working in fraught areas
+under new admin.”
+</li>
+</ul>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 5em; ">
+Inclusion &amp; Representation
+</td>
+<td style="text-align:center;width: 15em; ">
+Examining leadership, faculty, and student inequities
+</td>
+<td style="text-align:left;width: 50em; ">
+<ul>
+<li>
+“If this hasn’t been examined recently, a look at gender/racial
+breakdown of 1) NTT faculty vs TT faculty, 2) department heads (maybe
+centers as well), 3) other leadership roles, 4) student composition, and
+why these vary if they do, and what that represents to students looking
+to stay in public health academia.”
+</li>
+<li>
+“Old boy/new boy networks of power, exclusion and lack of transparency.
+Solutions to change the inequitable old boy/new boy dynamics.”
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p><img src="free-write_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+</div>
+<div
+id="what-topics-or-issues-would-like-addressed-in-future-faculty-senate-annual-surveys"
+class="section level2">
+<h2>8. What topics or issues would like addressed in future Faculty
+Senate annual surveys?</h2>
+<p><img src="free-write_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<table class="table table-hover table-condensed table-bordered" style="color: black; width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+Summary of Topics for Future Faculty Senate Annual Surveys
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+Theme
+</th>
+<th style="text-align:center;">
+Description
+</th>
+<th style="text-align:left;">
+Example
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;width: 5em; ">
+Survey Design &amp; Scope
+</td>
+<td style="text-align:center;width: 15em; ">
+Refine question flow, include missing demographics, skip options,
+open‐ended fields
+</td>
+<td style="text-align:left;width: 50em; ">
+<ul>
+<li>
+“I notice that disability and LGBTQ status were left off of the
+demographic questions…”
+</li>
+<li>
+“Be more inclusive of Research Associate roles…”
+</li>
+<li>
+“It would be nice to see some IDARE questions included in future faculty
+pulse surveys.”
+</li>
+</ul>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 5em; ">
+Compensation &amp; Benefits
+</td>
+<td style="text-align:center;width: 15em; ">
+Transparent salary scales, equity across ranks/tracks, health insurance,
+COL adjustments
+</td>
+<td style="text-align:left;width: 50em; ">
+<ul>
+<li>
+“Public information on salary distribution and pay gaps by rank, title,
+gender, years.”
+</li>
+</ul>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 5em; ">
+Work–Life Balance, Well-Being, Community
+</td>
+<td style="text-align:center;width: 15em; ">
+Physical/mental health support, realistic workload, time-use
+transparency, resilience
+</td>
+<td style="text-align:left;width: 50em; ">
+<ul>
+<li>
+“Work-life balance and vacation/sick time. Unlimited days off leaves us
+vulnerable to exploitation.”
+</li>
+<li>
+“Including more aspects of belonging and inclusivity.”
+</li>
+</ul>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 5em; ">
+DEI &amp; Equity
+</td>
+<td style="text-align:center;width: 15em; ">
+Assess inclusion, pay gaps by gender/race, complaints mechanism,
+belonging metrics
+</td>
+<td style="text-align:left;width: 50em; ">
+<ul>
+<li>
+“Equity and inclusion for minority faculty, especially for promotions.”
+</li>
+<li>
+“Faculty knowledge, need, and acceptance of DEI policies and
+initiatives.”
+</li>
+<li>
+“Landscape of DEI in the school. Where can we improve support in this
+area?”
+</li>
+</ul>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 5em; ">
+Teaching &amp; Student Support
+</td>
+<td style="text-align:center;width: 15em; ">
+Course/term length feedback, TA support, advising load, student
+interaction quality
+</td>
+<td style="text-align:left;width: 50em; ">
+<ul>
+<li>
+“Survey satisfaction with current course term length, grading of
+students….”
+</li>
+<li>
+“Broad educational topics like building curricula in the presence of AI
+tools.”
+</li>
+</ul>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 5em; ">
+Research Funding &amp; CBA Impacts
+</td>
+<td style="text-align:center;width: 15em; ">
+Measure grant-funding pressures, CBA support for PhD stipends, planning
+for cuts
+</td>
+<td style="text-align:left;width: 50em; ">
+<ul>
+<li>
+“How many faculty have funding to support PhD CBA requirements?”
+</li>
+</ul>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 5em; ">
+Technology &amp; Innovation
+</td>
+<td style="text-align:center;width: 15em; ">
+Access to AI/IT tools, automate admin tasks, hybrid/virtual teaching
+models
+</td>
+<td style="text-align:left;width: 50em; ">
+<ul>
+<li>
+“Access to AI tools.”
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div
+id="what-additional-feedback-do-you-have-about-the-workload-roles-responsibilities-and-rewards-of-non-tenure-track-faculty-at-jhsph"
+class="section level2">
+<h2>9. What additional feedback do you have about the workload, roles,
+responsibilities, and rewards of non-tenure-track faculty at JHSPH?</h2>
+<table class="table table-hover table-condensed table-bordered" style="color: black; width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+Summary of NTT Faculty Feedback Themes and Representative Quotes
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+Theme
+</th>
+<th style="text-align:center;">
+Description
+</th>
+<th style="text-align:left;">
+Quote
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;width: 5em; ">
+Respect &amp; Compensation Equity
+</td>
+<td style="text-align:center;width: 15em; ">
+Call for equal pay, salary transparency, and recognition for NTT
+contributions
+</td>
+<td style="text-align:left;width: 50em; ">
+<ul>
+<li>
+“Given similar workload, teaching and research, non-tenure track should
+get the same salary.”
+</li>
+<li>
+“Hopkins is a pretty terrible place to be as NT faculty… Our salaries
+are lower - even though we do the same, and sometimes more, work as TT
+faculty - and opportunities are less.”
+</li>
+<li>
+“I really enjoy my interactions with students but feel like I was not
+adequately compensated for my contributions to the academic program over
+the years.”
+</li>
+</ul>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 5em; ">
+Career Advancement &amp; Clear Roles
+</td>
+<td style="text-align:center;width: 15em; ">
+Need for transparent promotion pathways and clearly defined
+expectations/roles
+</td>
+<td style="text-align:left;width: 50em; ">
+<ul>
+<li>
+“Give us clear and measurable work expectations and targets for
+promotion.”
+</li>
+<li>
+“It would be helpful to have more clarity on expectations and typical
+workload and promotion criteria at all ranks.”
+</li>
+</ul>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 5em; ">
+Administrative Support &amp; Balance
+</td>
+<td style="text-align:center;width: 15em; ">
+Reduce administrative burden and clarify workload distribution across
+tasks
+</td>
+<td style="text-align:left;width: 50em; ">
+<ul>
+<li>
+“Currently workloads are way too much doing the job of the finance team
+in my department.”
+</li>
+<li>
+“Percent effort is a trap. It is not tied to a realistic number of
+weekly hours.”
+</li>
+</ul>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 5em; ">
+Flexibility &amp; Work–Life Balance
+</td>
+<td style="text-align:center;width: 15em; ">
+Value the lighter, flexible workload and support boundaries around time
+off
+</td>
+<td style="text-align:left;width: 50em; ">
+<ul>
+<li>
+“I appreciate the flexibility in devoting my time to research because
+it’s what I love.”
+</li>
+<li>
+“I appreciate the lighter, more flexible workload that being NTT allows
+compared to TT.”
+</li>
+</ul>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 5em; ">
+Discretionary &amp; Resource Access
+</td>
+<td style="text-align:center;width: 15em; ">
+Increase general-fund and discretionary support, and shared
+equipment/resources
+</td>
+<td style="text-align:left;width: 50em; ">
+<ul>
+<li>
+“General funds should be a larger share of effort.”
+</li>
+<li>
+“More mechanisms to fund discretionary and administrative support are
+needed.”
+</li>
+</ul>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 5em; ">
+Departmental Variability
+</td>
+<td style="text-align:center;width: 15em; ">
+Recognize the diversity of NTT roles across departments; avoid
+one-size-fits-all policies
+</td>
+<td style="text-align:left;width: 50em; ">
+<ul>
+<li>
+“NTT faculty vary hugely from one department to another—there’s really
+no one size fits all.”
+</li>
+<li>
+“There is incredible variability across departments that I find
+concerning.”
+</li>
+</ul>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 5em; ">
+Teaching Opportunities
+</td>
+<td style="text-align:center;width: 15em; ">
+Create more transparent, fair teaching assignments aligned with
+expertise and interests
+</td>
+<td style="text-align:left;width: 50em; ">
+<ul>
+<li>
+“I do enjoy teaching and I would enjoy picking up another class or two…
+but it is not clear how those opportunities present themselves.”
+</li>
+<li>
+“Big mistake was no longer allowing Research Associates to advise… This
+increased the burden of advising for other faculty.”
+</li>
+<li>
+“It would be nice to have opportunities to teach, collaborate with
+others, and engage in activities outside of primary grants.”
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div
+id="what-suggestions-do-you-have-for-bsph-regarding-the-qualities-you-think-are-important-when-identifying-the-next-dean"
+class="section level2">
+<h2>10. What suggestions do you have for BSPH regarding the qualities
+you think are important when identifying the next Dean?</h2>
+<table class="table table-hover table-condensed table-bordered" style="color: black; width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+Expanded Summary of Suggested Qualities for the Next Dean
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+Theme
+</th>
+<th style="text-align:center;">
+Description
+</th>
+<th style="text-align:left;">
+Quote
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;width: 5em; ">
+Equity &amp; Advocacy
+</td>
+<td style="text-align:center;width: 15em; ">
+Champion equity across ranks; stand up for faculty needs
+</td>
+<td style="text-align:left;width: 50em; ">
+<ul>
+<li>
+“A powerful disruptor who will prioritize equity instead of adopting
+current systems.”
+</li>
+<li>
+“Has to be someone who can advocate for the faculty and for our school
+within the broader university and within the broader public health
+community.”
+</li>
+<li>
+“Commitment to IDARE and to standing up for public health against new
+gov’t administration that is anti-public-health.”
+</li>
+</ul>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 5em; ">
+Communication &amp; Collaboration
+</td>
+<td style="text-align:center;width: 15em; ">
+Excellent communicator; fosters collaboration and community
+</td>
+<td style="text-align:left;width: 50em; ">
+<ul>
+<li>
+“Ability and interest in fostering transdisciplinary research and
+continue to break down silos between departments.”
+</li>
+<li>
+“Able to promote multi and transdisciplinary work.”
+</li>
+</ul>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 5em; ">
+Financial Stewardship
+</td>
+<td style="text-align:center;width: 15em; ">
+Strong fundraising ability; financial acumen to reduce soft-money
+reliance
+</td>
+<td style="text-align:left;width: 50em; ">
+<ul>
+<li>
+“Ability to raise money for the school to reduce over-reliance on grant
+funding.”
+</li>
+<li>
+“Important that they have experience in soft money environments similar
+to BSPH to understand the experiences of faculty.”
+</li>
+<li>
+“Someone who will better understand the funding concerns and pressures
+of faculty.”
+</li>
+</ul>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 5em; ">
+Visionary Leadership
+</td>
+<td style="text-align:center;width: 15em; ">
+Clear, compelling vision for BSPH’s future and strategic direction
+</td>
+<td style="text-align:left;width: 50em; ">
+<ul>
+<li>
+“The next Dean should have a clear vision for the School and its role in
+the world.”
+</li>
+<li>
+“We need an internationally recognized and respected leader; someone who
+will be visionary and inspiring. Public health is in the spotlight and
+we need to deliver at BSPH.”
+</li>
+<li>
+“Ideally the next Dean work have a strong understanding of the academic
+‘system’ but a vision for how to bring BSPH into the new world… It would
+be great to have a dean with a strong vision for how BSPH would stay
+competitive.”
+</li>
+</ul>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 5em; ">
+Operational Excellence
+</td>
+<td style="text-align:center;width: 15em; ">
+Improve administrative, HR, and grant management systems; cut red tape
+</td>
+<td style="text-align:left;width: 50em; ">
+<ul>
+<li>
+“Improve administrative and financial support for grant making and
+management.”
+</li>
+<li>
+“Good administrator — straighten out HR, and help standardize or at
+least share policies and procedures across departments.”
+</li>
+</ul>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 5em; ">
+Policy &amp; External Impact
+</td>
+<td style="text-align:center;width: 15em; ">
+Drive research‑to‑policy translation and elevate public health
+leadership nationally
+</td>
+<td style="text-align:left;width: 50em; ">
+<ul>
+<li>
+“A strategy for translating research findings more readily into policy
+and change at the local and federal level would be desirable, too.”
+</li>
+<li>
+“Someone who will be a national leader in policy discussions impacting
+public health.”
+</li>
+<li>
+“Someone that can place public health research and practice from BSPH in
+the public eye in a way that is transparent and trust-building.”
+</li>
+</ul>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 5em; ">
+Preferred Background and Traits
+</td>
+<td style="text-align:center;width: 15em; ">
+Preferences on internal vs external, research focus, and leadership
+background
+</td>
+<td style="text-align:left;width: 50em; ">
+<ul>
+<li>
+“Orientation toward education and research. External person to bring
+experience from elsewhere, with strong research credentials,
+non-physician.”
+</li>
+<li>
+“Someone who has experience working in both academia, practice, and
+nonprofit/think-tank type research roles, so they have a diversity of
+work experiences.”
+</li>
+<li>
+“Do a better job at identifying external candidates.”
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p><img src="free-write_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
