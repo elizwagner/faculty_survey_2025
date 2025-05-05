@@ -1,0 +1,572 @@
+---
+title: ""
+output: html_document
+---
+
+<div style="text-align: center;">
+<h1>General Information</h1>
+</div>
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+# Load required libraries
+library(haven)    # for read_dta()
+library(writexl)  # for write_xlsx()
+
+# Read the Stata file
+data <- read_dta("2024 faculty pulse survey for analysis.dta")
+```
+
+
+
+<div style="text-align: center;">
+
+*This page presents summary statistics on sample sizes and completion rates.*
+
+</div>
+
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+
+library(dplyr)
+library(haven)
+
+# Completion rates by tenure, using as_factor() to pick up the labelled values
+completion_by_tenure <- data %>% 
+  filter(!is.na(`_v1`)) %>%
+  mutate(tenure = as_factor(`_v1`)) %>%    # turns 1 → "Tenure track", 2 → "Non-tenure track"
+  group_by(tenure) %>%
+  summarise(
+    completed       = sum(Finished == 1, na.rm = TRUE),
+    total           = n(),
+    completion_rate = completed / total
+  )
+
+# Prepare data with Duration in minutes
+data2 <- data %>% 
+  mutate(Duration_min = Duration__in_seconds_ / 60)
+
+# Duration by tenure × finished
+duration_by_tenure_finished <- data2 %>%
+  filter(!is.na(`_v1`)) %>%
+  mutate(tenure = as_factor(`_v1`)) %>%
+  group_by(tenure, Finished) %>%
+  summarise(
+    avg_min = mean(Duration_min, na.rm = TRUE),
+    n       = n()
+  ) %>%
+  ungroup() %>%
+  mutate(
+    Finished = if_else(Finished == 1, "Completed", "Not Completed")
+  )
+
+
+```
+
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+library(dplyr)
+library(haven)
+
+# 0. Prep: create a tenure factor and convert duration to minutes
+data2 <- data %>% 
+  mutate(
+    tenure       = as_factor(`_v1`),                # 1→“Tenure track”, 2→“Non-tenure track”
+    Duration_min = Duration__in_seconds_ / 60       # seconds → minutes
+  )
+
+# 1. Total number of respondents
+total_respondents <- nrow(data2)
+
+# 2. Completion rates
+completion_overall <- data2 %>% 
+  summarise(
+    completed       = sum(Finished == 1, na.rm = TRUE),
+    total           = n(),
+    completion_rate = completed / total
+  )
+
+completion_by_tenure <- data2 %>%
+  filter(!is.na(`_v1`)) %>%
+  group_by(tenure) %>%
+  summarise(
+    completed       = sum(Finished == 1, na.rm = TRUE),
+    total           = n(),
+    completion_rate = completed / total
+  )
+
+# 3. Duration in minutes: overall & by Finished & by tenure × Finished
+duration_overall <- data2 %>%
+  summarise(avg_min = mean(Duration_min, na.rm = TRUE))
+
+duration_by_finished <- data2 %>%
+  group_by(Finished) %>%
+  summarise(
+    avg_min = mean(Duration_min, na.rm = TRUE),
+    n       = n()
+  ) %>%
+  mutate(Finished = if_else(Finished == 1, "Completed", "Not Completed"))
+
+duration_by_tenure_finished <- data2 %>%
+  filter(!is.na(`_v1`)) %>%
+  group_by(tenure, Finished) %>%
+  summarise(
+    avg_min = mean(Duration_min, na.rm = TRUE),
+    n       = n()
+  ) %>%
+  ungroup() %>%
+  mutate(Finished = if_else(Finished == 1, "Completed", "Not Completed"))
+
+# 4. Sample sizes
+sample_sizes <- tibble(
+  overall          = nrow(data2),
+  completed        = sum(data2$Finished == 1, na.rm = TRUE),
+  tenure_track     = sum(data2$`_v1` == 1, na.rm = TRUE),
+  non_tenure_track = sum(data2$`_v1` == 2, na.rm = TRUE)
+)
+
+# 5. Counts for each race question (_v198–_v206)
+race_counts <- data2 %>%
+  summarise(across(
+    .cols = `_v198`:`_v206`,
+    .fns  = ~sum(. == 1, na.rm = TRUE)
+  )) %>%
+  rename_with(~c(
+    "White",
+    "Black or African American",
+    "Hispanic or Latino",
+    "American Indian or Alaska Native",
+    "Middle Eastern or North African",
+    "Asian",
+    "Native Hawaiian or Pacific Islander",
+    "Other",
+    "Prefer not to say"
+  ))
+
+
+# Define your race vars and labels
+race_vars   <- c("_v198","_v199","_v200","_v201","_v202","_v203","_v204","_v205","_v206")
+race_labels <- c(
+  "White",
+  "Black or African American",
+  "Hispanic or Latino",
+  "American Indian or Alaska Native",
+  "Middle Eastern or North African",
+  "Asian",
+  "Native Hawaiian or Pacific Islander",
+  "Other",
+  "Prefer not to say"
+)
+
+library(dplyr)
+library(haven)
+library(tidyr)
+
+# 1. Prep: add 'gender' factor (with labels) and keep our race dummies
+data3 <- data2 %>% 
+  mutate(
+    gender = as_factor(`_v196`)  # 1→Male, 2→Female, etc.
+  )
+
+# 2. Sample size by gender
+gender_counts <- data3 %>%
+  count(gender) %>%
+  rename(n = n)
+
+# 3. Cross‐tab gender × race
+race_vars   <- c("_v198","_v199","_v200","_v201","_v202","_v203","_v204","_v205","_v206")
+race_labels <- c(
+  "White",
+  "Black or African American",
+  "Hispanic or Latino",
+  "American Indian or Alaska Native",
+  "Middle Eastern or North African",
+  "Asian",
+  "Native Hawaiian or Pacific Islander",
+  "Other",
+  "Prefer not to say"
+)
+
+gender_race_ct <- data3 %>%
+  pivot_longer(
+    cols      = all_of(race_vars),
+    names_to  = "race_var",
+    values_to = "selected"
+  ) %>%
+  filter(selected == 1) %>%                   # only keep rows where that race was picked
+  mutate(
+    race = recode(race_var, !!!setNames(race_labels, race_vars))
+  ) %>%
+  count(gender, race) %>%                     # tally for each gender × race
+  pivot_wider(
+    names_from  = race,
+    values_from = n,
+    values_fill = 0
+  )
+
+
+# Start from data3 (which already has tenure, Duration_min, and gender)
+gender_race_ct <- data3 %>%
+  # 1) Drop labels on the race dummies so they’re plain 0/1 numerics
+  mutate(across(all_of(race_vars), ~ as.numeric(.))) %>%
+  # 2) Pivot into long form
+  pivot_longer(
+    cols      = all_of(race_vars),
+    names_to  = "race_var",
+    values_to = "selected"
+  ) %>%
+  # 3) Keep only the selected=1 cases
+  filter(selected == 1) %>%
+  # 4) Map var names to your human‐readable labels
+  mutate(race = recode(race_var, !!!setNames(race_labels, race_vars))) %>%
+  # 5) Count gender × race
+  count(gender, race) %>%
+  # 6) Spread back out so each race is its own column
+  pivot_wider(
+    names_from  = race,
+    values_from = n,
+    values_fill = 0
+  )
+
+# And your gender totals:
+gender_counts <- data3 %>%
+  count(gender, name = "n")
+```
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+
+# 1) COMPLETION TABLE -------------------------------------------------------
+
+library(dplyr)
+library(knitr)
+library(kableExtra)
+
+# Build a single table of Overall + by Tenure
+completion_table <- bind_rows(
+  completion_overall %>%
+    mutate(Group = "Overall") %>%
+    select(Group,
+           Completed       = completed,
+           Total           = total,
+           `Completion Rate` = completion_rate),
+  
+  completion_by_tenure %>%
+    rename(Group = tenure) %>%
+    select(Group,
+           Completed       = completed,
+           Total           = total,
+           `Completion Rate` = completion_rate)
+)
+
+
+
+```
+
+
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+library(dplyr)
+library(haven)       # for as_factor()
+library(forcats)     # for fct_explicit_na()
+library(knitr)
+library(kableExtra)
+
+# —— 1) Compute completion by department, with NA → "Missing" ——
+completion_by_dept <- data2 %>%
+  mutate(
+    Department = as_factor(`_v195`) %>% 
+                 fct_explicit_na("Missing")     # turn NA into “Missing”
+  ) %>%
+  group_by(Department) %>%
+  summarise(
+    Completed        = sum(Finished == 1, na.rm = TRUE),
+    Total            = n(),
+    `Completion Rate` = Completed / Total
+  )
+
+# —— 2) Build the combined completion table ——
+completion_table <- bind_rows(
+  # Overall
+  completion_overall %>%
+    mutate(Group = "Overall") %>%
+    select(Group,
+           Completed        = completed,
+           Total            = total,
+           `Completion Rate` = completion_rate),
+  
+  # By tenure
+  completion_by_tenure %>%
+    rename(Group = tenure) %>%
+    select(Group,
+           Completed        = completed,
+           Total            = total,
+           `Completion Rate` = completion_rate),
+  
+  # By department (now includes “Missing”)
+  completion_by_dept %>%
+    rename(Group = Department) %>%
+    select(Group, Completed, Total, `Completion Rate`)
+)
+
+# —— 3) Render HTML table ——
+kbl(
+  completion_table,
+  format    = "html",
+  digits    = c(0, 0, 0, 3),    # Completed, Total integer; rate to 3 dp
+  align     = "c",
+  caption   = "Completion Rates: Overall, Tenure Status, Department"
+) %>%
+  kable_styling(
+    bootstrap_options = c("hover", "condensed", "bordered"),
+    full_width        = FALSE,
+    position          = "center"
+  ) %>%
+  pack_rows("Overall",              1, 1,                                           bold = TRUE) %>%
+  pack_rows("By Tenure Status",     2, nrow(completion_by_tenure) + 1,            bold = TRUE) %>%
+  pack_rows("By Department",        nrow(completion_by_tenure) + 2, 
+                                       nrow(completion_table),                    bold = TRUE)
+
+```
+
+
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+library(dplyr)
+library(haven)       # as_factor()
+library(forcats)     # fct_explicit_na()
+library(tidyr)
+library(knitr)
+library(kableExtra)
+
+# 1) Build Department × Tenure cross‐tab
+dept_tenure_ct <- data2 %>%
+  mutate(
+    Department = as_factor(`_v195`) %>% fct_explicit_na("Missing"),
+    Tenure     = as_factor(`_v1`)    # "Tenure track" / "Non-tenure track"
+  ) %>%
+  count(Department, Tenure) %>%
+  pivot_wider(
+    names_from   = Tenure,
+    values_from  = n,
+    values_fill  = 0
+  )
+
+# 2) Render it
+kbl(
+  dept_tenure_ct,
+  format    = "html",
+  align     = "c",
+  caption   = "Cross‐Tab Department x Tenure Status"
+) %>%
+  kable_styling(
+    bootstrap_options = c("hover", "condensed", "bordered"),
+    full_width        = FALSE,
+    position          = "center"
+  )
+
+```
+
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+# 2) DURATION TABLE ---------------------------------------------------------
+
+# Build a stacked Duration table: Overall, by Finished, by Tenure×Finished
+duration_table <- bind_rows(
+  # overall average
+  duration_overall %>%
+    mutate(Group = "Overall",
+           N     = NA_integer_) %>%
+    rename(`Avg (min)` = avg_min) %>%
+    select(Group, `Avg (min)`, N),
+  
+  # by Completed vs Not Completed
+  duration_by_finished %>%
+    rename(Group     = Finished,
+           `Avg (min)` = avg_min,
+           N         = n) %>%
+    select(Group, `Avg (min)`, N),
+  
+  # by Tenure × Completed
+  duration_by_tenure_finished %>%
+    mutate(Group = paste(tenure, Finished, sep = " – ")) %>%
+    rename(`Avg (min)` = avg_min,
+           N         = n) %>%
+    select(Group, `Avg (min)`, N)
+)
+
+# assume data2 exists and total_respondents = nrow(data2)
+
+duration_table <- bind_rows(
+  # overall average, now with N = total respondents
+  duration_overall %>%
+    mutate(
+      Group    = "Overall",
+      N        = nrow(data2)
+    ) %>%
+    rename(`Avg (min)` = avg_min) %>%
+    select(Group, `Avg (min)`, N),
+  
+  # by Completed vs Not Completed
+  duration_by_finished %>%
+    rename(
+      Group      = Finished,
+      `Avg (min)` = avg_min,
+      N          = n
+    ) %>%
+    select(Group, `Avg (min)`, N),
+  
+  # by Tenure × Completed
+  duration_by_tenure_finished %>%
+    mutate(Group = paste(tenure, Finished, sep = " – ")) %>%
+    rename(
+      `Avg (min)` = avg_min,
+      N           = n
+    ) %>%
+    select(Group, `Avg (min)`, N)
+)
+
+# Render with grouped row blocks
+kbl(duration_table,
+    format    = "html",
+    digits    = c(0,1,0),        # Group text; avg to 1 dp; N integer
+    align     = "c",
+    caption   = "Duration (minutes): Overall, by Completion, and by Tenure × Completion") %>%
+  kable_styling(
+    bootstrap_options = c("hover","condensed","bordered"),
+    full_width        = FALSE,
+    position          = "center"
+  ) %>%
+  pack_rows("Overall",                1, 1,                       bold = TRUE) %>%
+  pack_rows("By Completion Status",   2, nrow(duration_by_finished)+1,   bold = TRUE) %>%
+  pack_rows("By Tenure × Completion",  nrow(duration_by_finished)+2, nrow(duration_table), bold = TRUE)
+
+
+```
+
+
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+library(dplyr)
+library(tidyr)
+library(knitr)
+library(kableExtra)
+
+# — 1) Prepare your summary data frames — 
+
+# (a) Gender counts
+gender_table <- gender_counts %>%
+  rename(Gender = gender,
+         Count  = n)
+
+# (b) Race counts: pivot the one‐row race_counts into long form
+race_table <- race_counts %>%
+  pivot_longer(everything(),
+               names_to  = "Race",
+               values_to = "Count")
+
+# (c) Gender × Race cross‐tab (already wide from previous steps)
+gender_race_table <- gender_race_ct %>%
+  rename(Gender = gender)
+
+# — 2) Render each with the same theming — 
+
+
+
+# — 1) Prepare your summary data frames — 
+
+# (a) Gender counts
+gender_table <- gender_counts %>%
+  rename(Gender = gender,
+         Count  = n)
+
+# (b) Race counts: pivot the one‐row race_counts into long form
+race_table <- race_counts %>%
+  pivot_longer(everything(),
+               names_to  = "Race",
+               values_to = "Count")
+
+# (c) Gender × Race cross‐tab (already wide from previous steps)
+gender_race_table <- gender_race_ct %>%
+  rename(Gender = gender)
+
+
+
+# Combine gender + race into one long table
+demog_table <- gender_table %>%
+  mutate(Category = "Gender",
+         Value    = Gender) %>%
+  select(Category, Value, Count) %>%
+  bind_rows(
+    race_table %>%
+      mutate(Category = "Race",
+             Value    = Race) %>%
+      select(Category, Value, Count)
+  )
+
+
+```
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+library(dplyr)
+library(knitr)
+library(kableExtra)
+
+# — Gender table —
+kbl(
+  gender_table, 
+  col.names = c("Gender","Count"),
+  format    = "html",
+  align     = "c",
+  caption   = "Demographics: Gender"
+) %>%
+  kable_styling(
+    bootstrap_options = c("hover","condensed","bordered"),
+    full_width        = FALSE,
+    position          = "center"
+  )
+
+# — Race table —
+kbl(
+  race_table, 
+  col.names = c("Race","Count"),
+  format    = "html",
+  align     = "c",
+  caption   = "Demographics: Race"
+) %>%
+  kable_styling(
+    bootstrap_options = c("hover","condensed","bordered"),
+    full_width        = FALSE,
+    position          = "center"
+  )
+
+```
+
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+library(dplyr)
+library(knitr)
+library(kableExtra)
+
+# Assuming you have already created 'gender_race_ct' (wide table of counts):
+#   rows = gender levels, cols = race categories
+
+# Rename for clarity
+gender_race_table <- gender_race_ct %>%
+  rename(Gender = gender)
+
+# Render as HTML table
+kbl(
+  gender_race_table,
+  format    = "html",
+  align     = "c",
+  caption   = "Cross-Tab Gender × Race"
+) %>%
+  kable_styling(
+    bootstrap_options = c("hover", "condensed", "bordered"),
+    full_width        = FALSE,
+    position          = "center"
+  )
+
+```
+
+
+

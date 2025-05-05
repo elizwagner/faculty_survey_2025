@@ -1,0 +1,1091 @@
+---
+title: Free-Write Word Analyses
+output:
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+```{r setup, include=FALSE}
+library(readxl)
+library(dplyr)
+library(ggplot2)
+library(stringr)
+library(tidyr)
+library(knitr)
+library(kableExtra)
+library(purrr)
+library(broom)
+library(tidytext)
+library(wordcloud)
+library(RColorBrewer)
+```
+
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+word_qs <- read_excel("Word_questions.xlsx")
+```
+
+# I. General Positive Feedback
+
+
+*The following summarizes the most frequently mentioned themes in the free-write prompts, focusing on individual responses about what is going well overall.*
+
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+library(dplyr)
+library(tibble)
+library(kableExtra)
+
+# Build the summary table for positive feedback quotes
+positive_feedback_table <- tribble(
+  ~Question,                                    ~Theme,                     ~Quote,
+  
+  "Comments on the recent retitling process",   
+  "Positive Experiences with Titles and Recognition", 
+  "<ul>
+    <li>“The retitling process was comprehensive and significant improvements have been made. The new requirement for inter folio review/posting for NTT , and the equity ranges now published are also significant in bringing us forward.”</li>
+    <li>“As someone re-titled into a new NTT title, I appreciate that the title is better understood outside Hopkins — especially important for grants.”</li>
+    <li>“I think it was a step in the right direction and was appreciated by many.., the ability to advise students was really important and appreciated.”</li>
+  </ul>",
+
+  "Steps chairs or leadership could take to improve job satisfaction", 
+  "Positive Feedback on Chairs and Leadership", 
+  "<ul>
+    <li>“I appreciate all that the chair of DIH is doing to listen to his people! We are a big unruly community... and a tough group to wrangle together.”</li>
+    <li>“I've been in several departments and fields and my chair is far and above the best leader I've worked under...”</li>
+    <li>“I think our chair has done a great job so far fixing many of the problems in our department. I appreciate how he highlights achievements like teaching awards and new grants for faculty — this costs nothing and it means a great deal.”</li>
+  </ul>",
+
+  "Things BSPH could do to support health and well-being", 
+  "Positive Feedback on Flexibility and Well-being Support", 
+  "<ul>
+    <li>“Flexible work schedule and work from home policies... is greatly appreciated.”</li>
+    <li>“BSPH has been a good employer — good benefits, good environment, lots of opportunities for those who want to seize them.”</li>
+    <li>“BSPH seems uniquely focused on faculty health and well-being, I think this is something the school... does well.”</li>
+  </ul>",
+
+  "Feedback on workload, roles, responsibilities, rewards of NTT faculty", 
+  "Positive Experiences with Roles and Support", 
+  "<ul>
+    <li>“I appreciate the flexibility in devoting my time to research because it’s what I love.”</li>
+    <li>“I genuinely appreciate the school's commitment to increasing salaries of NTT RPT faculty this past year to be more commensurate with the roles and competitive with other universities.”</li>
+    <li>“I think departments should learn from each other and share positive experiences on how to make NTT faculty feel appreciated and motivated.”</li>
+  </ul>",
+
+  "Topics or issues for Faculty Senate to address", 
+  "Positive Feedback on Faculty Senate", 
+  "<ul>
+    <li>“The senate has been doing a wonderful job of highlighting issues, as reflected in this survey.”</li>
+  </ul>"
+)
+
+# Render as an HTML table
+positive_feedback_table %>%
+  kbl(format = "html",
+      align = "lcl",
+      escape = FALSE,
+      caption = "Summary of Positive Feedback from Faculty Survey") %>%
+  kable_styling(bootstrap_options = c("hover", "condensed", "bordered"),
+                full_width = FALSE,
+                position = "center") %>%
+  column_spec(1, width = "6em") %>%  # Theme column
+  column_spec(2, width = "10em") %>%  # Description column
+  column_spec(3, width = "54em")      # Quote column
+```
+
+
+
+# II. General Constructive Feedback by Question
+
+
+*The following is an attempt to provide a general picture of what was most mentioned in the free-write prompts, using overall individual responses focused was on concerns, challenges, changes, and areas that need improvement.*
+
+
+## 1. Please share any comments or concerns you have regarding the recent re-titling process.
+
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+library(dplyr)
+library(tibble)
+library(kableExtra)
+
+# Build the summary table with updated categories
+qual_table <- tribble(
+  ~Theme,                             ~Description,                                                           ~Quote,
+  
+  "Confusion & Complexity",     
+  "More titles, more confusion about roles",                       
+  "<ul>
+    <li>“All it did was increase the number of titles and thus, the confusion.”</li>
+    <li>“While the retitling helped a lot of faculty with awkward titles that did not accurately reflect their roles at the school, many are still 'stuck' in titles that don't make sense.”</li>
+  </ul>",
+  
+  "Equity & Compensation",      
+  "Retitling didn’t improve pay or equity; NTT burdens unrecognized",     
+  "<ul>
+    <li>“Salary adjustments were a joke… non-TT faculty are trying to leave in droves.”</li>
+    <li>“The re-titling process has done little to elevate and show appreciation for the hidden institutional burden that NTT faculty shoulder for the institution writ large.”</li>
+    <li>“The re-titling process failed to address the core issue, which is that we have NTT faculty who are doing the same work as TT faculty... but are treated very differently and inequitably.”</li>
+     <li>“...it feels like there is potential for lower pay or discrepancies based on whether one is research or practice based.”</li>
+  </ul>",
+  
+  "Transparency & Consistency",
+  "Unclear, inconsistent processes across departments",                       
+  "<ul>
+    <li>“Implementation of retitling was inequitable between departments and within departments.”</li>
+    <li>“Lack of transparency in process and inability to hire into research professor role.”</li>
+    <li>“Plan for non-expedited process not defined and feels subjective, not standard between departments.”</li>
+  </ul>",
+  
+  "Role-Responsibility & Research Assoc. Mismatch",
+  "Blended roles, RA ranks, and mismatched titles create barriers",        
+  "<ul>
+    <li>“...effectively demoted anyone who remained in the Scientist track... and seems to reinforce the sentiment that Scientists are basically staff.”</li>
+    <li>“Research Associates were ignored and excluded.”</li>
+    <li>“Why has the ‘Assistant Scientist’ title been retained? It hinders faculty in submissions because it doesn’t sound like a doctoral-level faculty position.”</li>
+    <li>“The titles remain inaccurate — NTT research professorial roles need to teach AND do research, so ‘Research X Professor’ is not accurate.”</li>
+  </ul>"
+)
+# Render as an HTML table
+qual_table %>%
+  kbl(format = "html",
+      align = "lcl",
+      escape = FALSE,
+      caption = "Summary of Retitling Feedback") %>%
+  kable_styling(bootstrap_options = c("hover", "condensed", "bordered"),
+                full_width = FALSE,
+                position = "center") %>%
+  column_spec(1, width = "6em") %>%  # Theme column
+  column_spec(2, width = "10em") %>%  # Description column
+  column_spec(3, width = "54em")      # Quote column
+
+```
+
+
+
+## 2. What are your largest concerns around job security?
+
+
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+# 1) Filter to only _v81 responses
+q81_data <- word_qs %>%
+  filter(
+    Question == "_v81"
+  )
+
+# 2) Tokenize into words, drop stop words, then count
+data("stop_words")  # from tidytext
+q81_words <- q81_data %>%
+  unnest_tokens(word, Level) %>%
+  anti_join(stop_words, by = "word") %>%     # remove prepositions, articles, etc.
+  count(word, wt = Count, sort = TRUE)
+
+# 3) Compute total words (after stop‐word removal)
+q81_total <- sum(q81_words$n)
+
+# 4) Compute relative frequency
+q81_freq <- q81_words %>%
+  mutate(freq = n / q81_total)
+
+# 5) Plot top 15 non-stop words
+top15_q81 <- q81_freq %>% slice_max(n, n = 10)
+ggplot(top15_q81, aes(x = reorder(word, n), y = n)) +
+  geom_col(fill = "darkviolet") +
+  coord_flip() +
+  labs(
+    title = "Top 10 Words Used in the Responses",
+    x     = "Word",
+    y     = "Count"
+  )
+```
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+library(dplyr)
+library(tibble)
+library(kableExtra)
+
+# Summarize job‐security concerns into themes with bullet-point quotes
+jobsec_table <- tribble(
+  ~Theme,                          ~Description,                                                                                       ~Quote,
+  
+"Soft‐Money Dependency",         
+"Heavy reliance on external grants, lack of diversified funding, no protected time for grant writing", 
+"<ul>
+  <li>“Being 100% dependent on grants for salary support.”</li>
+  <li>“A soft money environment when we receive no protected time to write grants is extremely challenging.”</li>
+  <li>“...I also find that it means that a promotion, with an increase in pay, is also marketed as a 'bad' or 'selfish' thing, since it means that more money has to be taken out of the grant.”</li>
+</ul>",
+
+  
+"Political Uncertainty",
+"Concerns over shifting federal priorities and potential budget cuts impacting NIH, CDC, and philanthropic funds", 
+"<ul>
+  <li>“The political environment poses a risk to future government funding... As a result, the faculty here is losing its competitive edge.”</li>
+  <li>“...Also, work in health equity or structural racism will be under direct threat. Without institutional support to buffer these changes, I don't know how I will be able to be in academia.”</li>
+  <li>“(The) political climate not conducive to international students.”</li>
+</ul>",
+
+  
+"Support & Resources",
+"Lack of departmental communication, safety nets, restrictive finance policies, and insufficient administrative resources", 
+"<ul>
+  <li>“I don’t feel that the school has provided any level of assurance that they will try to alleviate funding shortfalls.”</li>
+  <li>“The fact that we cannot bank funds when we are overfunded is really challenging as it would help to offset times when we are underfunded.”</li>
+  <li>“I perform a lot of administrative duties that are outside the scope of my job description because there is inadequate support from the division/department.”</li>
+</ul>",
+  
+"Career Progression & Tenure",   
+"Uncertainty, delays in promotion, unclear promotion guidelines, and lack of start-up support for NTT roles", 
+"<ul>
+  <li>“My promotion to full professor has been under review for 14 months. They say that is just how it goes, but I worry.”</li>
+  <li>“Lack of clarity on promotion process requirements, appears very subjective.”</li>
+  <li>“As an Assistant Scientist... I received feedback that they doubt the institution's commitment because of my non‐tenure track role and lack of start‐up funds.”</li>
+</ul>",
+  
+"Work Life Stress Factors",
+"High workload pressures, limited time to work on necessary things outside finding grants; turnover and poor work-life balance; not being paid enough despite working long hours", 
+"<ul>
+  <li>“Why is our expected percent effort so much higher than other institutions (even Harvard)? This is why we have had so much turnover.”</li>
+  <li>“Now I have to take on many projects (5 for now) to cover my salary. It's exhausting.”</li>
+  <li>“I think my contributions are valued, but I feel like I can't keep up with my work load, let alone find time to write grants.”</li>
+</ul>",
+  
+"Personal & Life‐Stage Stress Factors", 
+"Retirement planning, family, visa concerns", 
+"<ul>
+  <li>“Tenure at the full professor level means living with uncertainty for a decade or more, especially for female faculty due to childbirth-related extensions and the unequal burden they often have to take to raise children.”</li>
+  <li>“Lack of job safety especially on H1B visa and being here with a family.”</li>
+</ul>",
+)
+
+jobsec_table %>%
+  kbl(format = "html",
+      align = "lcl",
+      escape = FALSE,
+      caption = "Themes in Job Security Concerns") %>%
+  kable_styling(bootstrap_options = c("hover", "condensed", "bordered"),
+                full_width = FALSE,
+                position = "center") %>%
+  column_spec(1, width = "5em") %>%  # Theme column
+  column_spec(2, width = "15em") %>%  # Description column
+  column_spec(3, width = "50em")      # Quote column
+
+
+```
+
+
+
+## 3. How do you think faculty compensation should be determined?
+
+
+
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+
+# 1) Filter to only _v153 responses
+q153_data <- word_qs %>%
+  filter(Question == "_v153")
+
+# 2) Tokenize into words, drop stop words, then count
+data("stop_words")  # from tidytext
+q153_words <- q153_data %>%
+  unnest_tokens(word, Level) %>%
+  anti_join(stop_words, by = "word") %>%     # remove common stop words
+  filter(word != "based") %>%                # <— drop “based”
+  count(word, wt = Count, sort = TRUE)
+
+# 3) Compute total words (after stop‐word & “based” removal)
+q153_total <- sum(q153_words$n)
+
+# 4) Compute relative frequency
+q153_freq <- q153_words %>%
+  mutate(freq = n / q153_total)
+
+# 5) Plot top 10 non-stop, non-“based” words
+top10_q153 <- q153_freq %>% slice_max(n, n = 5)
+ggplot(top10_q153, aes(x = reorder(word, n), y = n)) +
+  geom_col(fill = "darkviolet") +
+  coord_flip() +
+  labs(
+    title = "Top 5 Words Used in the Responses",
+    x     = "Word",
+    y     = "Count"
+  ) 
+```
+
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+
+# Updated compensation criteria summary table with added quotes
+
+comp_table <- tribble(
+  ~Theme, ~Description, ~Quote,
+  
+  "Composite Performance",          
+  "Holistic evaluation across teaching, research, practice, and service.",   
+  "<ul>
+    <li>“Based on a composite of value provided to the university and field including: funding, productivity, teaching, area of expertise.”</li>
+    <li>“Overall contributions to Dept and School—research, teaching, practice, service collectively.”</li>
+    <li>“Based on your total contributions in teaching, research and/or practice.”</li>
+    <li>“Overall value—which can be in teaching, service, practice, or research grants.”</li>
+  </ul>",
+  
+  "Productivity & Output Metrics",  
+  "Measured by grant funding, publications, courses taught, and projects.", 
+  "<ul>
+    <li>“Based on the productivity, which is not only papers published, it also includes grant money, the number and sizes of courses taught.”</li>
+    <li>“Combo of productivity, skillsets, and grant money secured.”</li>
+    <li>“Based on the quality and efficiency of work done.”</li>
+  </ul>",
+  
+  "Market & External Benchmarking", 
+  "Comparing salaries to market rates and peer institutions.",  
+  "<ul>
+    <li>“Based on salaries in comparable institutions.”</li>
+    <li>“Peer institution salaries.”</li>
+    <li>“Market rate, competing offer.”</li>
+  </ul>",
+  
+  "Equity & Fairness",              
+  "Ensuring equity across ranks and recognition of supervisory duties.",             
+  "<ul>
+    <li>“Equity within rank and impact.”</li>
+    <li>“Not strictly money you bring in through grants—but some recognition of supervisory/fiscal responsibilities for staff/programs and the added stress of those responsibilities.”</li>
+    <li>“Equity considerations.”</li>
+  </ul>",
+  
+  "Experience & Seniority",         
+  "Accounting for experience, responsibility level, and seniority.",             
+  "<ul>
+    <li>“Level/years of experience (including prior to joining JHU).”</li>
+    <li>“Total professional experience.”</li>
+    <li>“Work experience (including non-JHU experience).”</li>
+  </ul>",
+  
+  "Leadership & Service",           
+  "Recognition of service roles, mentorship, and departmental contributions.", 
+  "<ul>
+    <li>“By your service to the department—teaching, mentoring, committee work, etc.”</li>
+    <li>“Contributions to the department (advising, directing programs, serving on committees).”</li>
+    <li>“Level of service to the School.”</li>
+  </ul>"
+)
+
+
+# Display as a styled HTML table
+comp_table %>%
+  kbl(format   = "html",
+      align    = "lcl",
+      escape   = FALSE,
+      caption  = "Themes in Faculty Compensation Preferences") %>%
+  kable_styling(bootstrap_options = c("hover", "condensed", "bordered"),
+                full_width = FALSE,
+                position = "center") %>%
+  column_spec(1, width = "5em") %>%  # Theme column
+  column_spec(2, width = "15em") %>%  # Description column
+  column_spec(3, width = "50em")      # Quote column
+```
+
+
+
+## 4. Imagine that there are clear performance metrics for a non-tenure track job description. For NTT who exceed metrics, how would you prefer for them to be compensated/recognized?
+
+
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+
+library(dplyr)
+library(tibble)
+library(kableExtra)
+
+# Build the summary table with bullet-point quotes
+comp_table <- tribble(
+  ~Theme,                         ~Description,                                                                                  ~Quote,
+  
+  "Financial Incentives & Bonuses",
+  "Access to discretionary accounts, bonuses, salary increases, and effort-based general fund support",      
+  "<ul>
+    <li>“Discretionary accounts PLEASE!!!”</li>
+    <li>“Salary increase would come with promotion…reasonable to give bonuses/discretionary account increases for good work.”</li>
+    <li>“TT have more general fund support than NTT. GF support should be effort-based rather than tenure-based.”</li>
+  </ul>",
+  
+  "Parity & Policy Alignment",    
+  "Apply consistent policies and search processes as tenure-track faculty",           
+  "<ul>
+    <li>“Non-tenure track faculty should ALWAYS be eligible to apply for tenure-track positions. They should NEVER be ‘promoted’ to the tenure track without a fair search.”</li>
+    <li>“Consider if promotion, application to a different faculty position, or change in activities is appropriate...”</li>
+  </ul>",
+  
+  "Promotion & Career Advancement",
+  "Accelerated promotion pathways and earning credits toward next rank when metrics are exceeded",                                     
+  "<ul>
+    <li>“Promotion within NTT ranks”</li>
+    <li>“Earning credits towards promotion”</li>
+  </ul>",
+  
+  "Recognition & Non-monetary Awards",
+  "Certificates, public acknowledgment, and non-monetary tokens of appreciation",                   
+  "<ul>
+    <li>“Certificates of recognition for outstanding achievement.”</li>
+    <li>“Non monetary recognition would be a nice touch.”</li>
+  </ul>",
+  
+  "Tailored & Flexible Options",  
+  "Individualized choice of reward format and protected time for professional development",                       
+  "<ul>
+    <li>“The person should have input on how they are compensated.”</li>
+    <li>“Protected time for professional development.”</li>
+  </ul>"
+)
+
+# Render as an HTML table
+comp_table %>%
+  kbl(format = "html",
+      align = "lcl",
+      escape = FALSE,
+      caption = "Preferences for Recognizing NTT Faculty Who Exceed Performance Metrics") %>%
+  kable_styling(bootstrap_options = c("hover", "condensed", "bordered"),
+                full_width = FALSE,
+                position = "center") %>%
+  column_spec(1, width = "5em") %>%  # Theme column
+  column_spec(2, width = "15em") %>%  # Description column
+  column_spec(3, width = "50em")      # Quote column
+
+```
+
+
+
+
+## 5. What steps could be taken by your chair or BSPH leadership to improve your job and/or job satisfaction?
+
+
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+
+# Build the summary table with bullet-point format
+qual_table_208 <- tribble(
+  ~Theme,                            ~Description,                                                               ~Quote,
+  
+"Compensation & Financial Support", 
+"Soft‐money burdens and pay inequities; need for more hard‐money/discretionary funds; inadequate compensation for activities outside research", 
+"<ul>
+  <li>“PAY. ME. MORE. The number one thing way above all others is pay. I am working so hard and still living paycheck to paycheck.”</li>
+  <li>“I need more hard money. The reason we have had so much turnover is that people are going to institutions where they don't have to try to get as many grants.”</li>
+  <li>“Increase my pay to be equivalent with my performance and responsibilities.”</li>
+</ul>",
+  
+"Administrative Burden, Staff, & Infrastructure",
+"Offload paperwork/grant logistics; clearer HR, stronger staff support and better systems", 
+"<ul>
+  <li>“Improve our financial administration and provide more administrative support to faculty.”</li>
+  <li>“Staff turnover creates so much work for me that is unnecessary.”</li>
+  <li>“FIX HR... This impacts ME, it impacts my students, it impacts my collaborating faculty, and it puts more work on the overworked and undervalued staff.”</li>
+</ul>",
+  
+"Career Trajectory", 
+"Transparent promotion pathways with measurable targets (papers, grants, teaching); advancement opportunities", 
+"<ul>
+  <li>“Base our promotions on something clear and measurable beyond just how many years we’ve worked here.”</li>
+  <li>“VALUE STAFF and provide them with opportunities for advancement that we as their PIs who fund them have guidance to allow us to WRITE THE PROMOTIONS INTO OUR GRANTS.”</li>
+  <li>“The promotion criteria within the scientist track are unclear. Despite having been promoted once, I still don’t fully understand what changed from one year to the next.”</li>
+</ul>",
+  
+"Transparency & Communication", 
+"Regular check‐ins, open decision‐making, discussion of ongoing issues, accessible leadership, clear policy dissemination; mentorship assignments and faculty recognition", 
+"<ul>
+  <li>“Have a semi‐annual check‐in to discuss effort distribution and progress toward goals. BSPH needs transparency in decisions.”</li>
+  <li>“Identify and acknowledge the inequities in the Department based on status, title, sex and discuss them in an open forum.”</li>
+  <li>“Better communication with faculty re: implementation of the CBA and recognition of the added work and risk faculty are being asked to take on.”</li>
+</ul>",
+
+  
+"Community, Mentorship & Culture", 
+"Peer‐mentoring, newcomer orientation, social events, chair visibility to build belonging", 
+"<ul>
+  <li>“Find and implement ways for faculty to feel connected… start peer‐mentoring groups and in‐person orientation.”</li>
+  <li>“Formal mentoring - clear description of how I could move to practice professor track since I've been told that's where I should probably be.”</li>
+  <li>“Continued support of departmental social events to build community and connection.”</li>
+</ul>",
+  
+"Community, Mentorship & Culture", 
+"Peer‐mentoring, newcomer orientation, social events, chair visibility to build belonging", 
+"<ul>
+  <li>“Find and implement ways for faculty to feel connected… start peer‐mentoring groups and in‐person orientation.”</li>
+  <li>“Formal mentoring - clear description of how I could move to practice professor track since I've been told that's where I should probably be.”</li>
+  <li>“Continued support of departmental social events to build community and connection.”</li>
+</ul>",
+)
+
+# Render as an HTML table
+qual_table_208 %>%
+  kbl(format = "html",
+      align = "lcl",
+      escape = FALSE,
+      caption = "Summary of General Feedback for Job Improvement by BSPH") %>%
+  kable_styling(bootstrap_options = c("hover", "condensed", "bordered"),
+                full_width = FALSE,
+                position = "center") %>%
+  column_spec(1, width = "5em") %>%  # Theme column
+  column_spec(2, width = "15em") %>%  # Description column
+  column_spec(3, width = "50em")      # Quote column
+
+```
+
+
+
+
+## 6. What are some of the most useful or important things BSPH could do to support your health and well-being?
+
+
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+
+
+# Build the summary table for health & well-being feedback (bullet-point format, original quotes only)
+qual_table_health <- tribble(
+  ~Theme,                         ~Description,                                                             ~Quote,
+  
+"Financial & Benefits",         
+"Fair pay, salary equity, hard-money support, and improved benefits",     
+"<ul>
+  <li>“Adequate pay (including transparency around promotion and salary increases).”</li>
+  <li>“Raise endowment funding that provides hard money support for faculty.”</li>
+  <li>“Solve the PhD student funding crisis.”</li>
+</ul>",
+
+  
+"Administrative & Operational", 
+"Reduce paperwork and streamline HR/grant systems to free up faculty time", 
+"<ul>
+  <li>“Dramatically reduce administrative burden. Address concerns of faculty when they are voiced and not ignored.”</li>
+  <li>“Stop asking me to do random service stuff. I'm busy chasing money, so get somebody who doesn't have to do that to do this fluffy stuff.”</li>
+  <li>“Understand the administrative burden that is placed on faculty and work... so that faculty can actually do the work they are supposed to do.”</li>
+</ul>",
+
+  
+"Work-life Balance",       
+"Enforce no-meeting days, clear vacation policies, flexible schedules",    
+"<ul>
+  <li>“Stop normalizing work weeks of over 40 hours… expectations need to be 40 hours, not 70–80.”</li>
+  <li>“Needs to be more accommodation for work-life balance - besides “no meeting” days and “have a relaxing summer” messaging.”</li>
+</ul>",
+
+  
+"Community & Support",   
+"Shared spaces, social events, and mental-health resources", 
+"<ul>
+  <li>“Provide opportunities to foster community for faculty.”</li>
+  <li>“Provide mental health resources for faculty during stressful times (it's not just students who are affected).”</li>
+</ul>",
+
+  
+"Resources & Environment",      
+"Access to equipment, dining areas, gyms, and safe physical workplaces",    
+"<ul>
+  <li>“Provide support for major equipment… a faculty dining area to discourage hiding in offices.”</li>
+  <li>“Increase green space; promote fitness and exercise options.”</li>
+</ul>",
+
+  
+"Transparency & Communication", 
+"Open decision-making, clear policies, regular check-ins and safe channels", 
+"<ul>
+  <li>“Clear communication and support in response to current events; acknowledge available resources for faculty.”</li>
+  <li>“Provide recommendations on how to improve health and well-being from Dean's office.”</li>
+</ul>",
+
+  
+  "Mentoring", 
+  "Formal mentoring programs, independent pathways, and cross-departmental connections",
+  "<ul>
+    <li>“Formal mentoring. Clear guidance for how I can work independently from my faculty sponsor.”</li>
+    <li>“Intentional building of mentorship and community within departments and between departments.”</li>
+    <li>“Provide remuneration and mentorship to those who are most vulnerable.”</li>
+  </ul>"
+)
+
+# Render as an HTML table for easy presentation
+qual_table_health %>%
+  kbl(format = "html",
+      escape = FALSE,  # allow HTML formatting for bullet lists
+      align = "lcl",
+      caption = "Summary of BSPH Health & Well-Being Feedback") %>%
+  kable_styling(bootstrap_options = c("hover", "condensed", "bordered"),
+                full_width = FALSE,
+                position = "center") %>%
+  column_spec(1, width = "5em") %>%  # Theme column
+  column_spec(2, width = "15em") %>%  # Description column
+  column_spec(3, width = "50em")      # Quote column
+
+
+```
+
+
+
+
+## 7. What topics or issues would you like Faculty Senate to address in the next two years?
+
+
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+q210_data <- word_qs %>%
+  filter(Question == "_v210")
+
+q210_words <- q210_data %>%
+  unnest_tokens(word, Level) %>%
+  anti_join(stop_words, by = "word") %>%     # remove common stop words
+  filter(word != "faculty") %>%   
+  filter(word != "senate") %>%   # <— drop “based”
+  count(word, wt = Count, sort = TRUE)
+
+# 3) Compute total words (after stop‐word & “based” removal)
+q210_total <- sum(q210_words$n)
+
+# 4) Compute relative frequency
+q210_freq <- q210_words %>%
+  mutate(freq = n / q210_total)
+
+# 5) Plot top 10 non-stop, non-“based” words
+top10_q210 <- q210_freq %>% slice_max(n, n = 10)
+ggplot(top10_q210, aes(x = reorder(word, n), y = n)) +
+  geom_col(fill = "darkviolet") +
+  coord_flip() +
+  labs(
+    title = "Top 10 Words Used in the Responses",
+    x     = "Word",
+    y     = "Count"
+  ) 
+```
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+library(dplyr)
+library(tibble)
+library(kableExtra)
+
+# Summarize Faculty Senate priorities into key themes, with bullet-point quotes
+fs_issues <- tribble(
+  ~Theme,                            ~Description,                                                                              ~Quotes,
+  
+"Administrative Burden & Bureaucracy",  
+"Excessive admin tasks and HR delays that steal faculty time",                              
+"<ul>
+  <li>\"Administrative burden / rote email overload / lack of administrative support.\"</li>
+  <li>\"The amount of administrative burden is unbearable. The attitude of admin, from HR, to facilities, to departmental admins, is disrespectful to faculty.\"</li>
+  <li>\"Developing an HR department that supports the mission of our faculty and school. Fix JHURA - major delays.\"</li>
+</ul>",
+
+
+"Compensation, Benefits, and Equity",           
+"Transparent, fair pay and salary parity (especially for NTT vs TT roles)",                  
+"<ul>
+  <li>\"Adequate pay (including transparency around promotion and salary increases).\"</li>
+  <li>\"Salary equity between ranks & departments.\"</li>
+  <li>\"Fair pay and stable commitments to junior faculty, tenure and non-tenure track..\"</li>
+</ul>",
+
+
+"NTT Faculty & Career Pathways",   
+"Standards for non-tenure track titles, promotion processes, and pathways to tenure",        
+"<ul>
+  <li>\"Continue the work of the NTT subcommittee to address issues faced by NTT faculty beyond just the retitling.\"</li>
+  <li>\"Creating pathways for transitioning from non-tenured to tenured positions.\"</li>
+</ul>",
+
+"Funding & Financial Sustainability",
+"Stable grant support, general funds, IDC returns, and a research-friendly financial model", 
+"<ul>
+  <li>\"Advocating for more guaranteed salary support... funding model is not sustainable.\"</li>
+  <li>\"Pushing for transparent formulas for general funds support for faculty in all departments.\"</li>
+  <li>\"Strategic plan in the event that NIH funding will be cut in the new administration... the University and School have been largely silent about how they are planning for this.\"</li>
+</ul>",
+
+"CBA Impacts & Student Relations", 
+"Effects of the CBA on teaching loads, TA availability, and grad-student accommodations",     
+"<ul>
+  <li>\"The CBA… fundamentally changed the relationship between students and advisors.\"</li>
+  <li>\"A voice for faculty to inform BSPH policies and procedures related to the CBA.\"</li>
+  <li>\"There are many impacts to faculty due to the CBA, including increased workload, fewer TA hours, fewer PhD students.\"</li>
+</ul>",
+
+"Support & Well-Being",            
+"Faculty mental health, mentoring programs, and work–life balance initiatives",               
+"<ul>
+  <li>\"Faculty mental health and well being; School culture; salary equity; protection of our faculty.\"</li>
+  <li>\"Faculty mental health, support for faculty working in fraught areas under new admin.\"</li>
+</ul>",
+
+
+"Inclusion & Representation",
+"Examining leadership, faculty, and student inequities",
+"<ul>
+  <li>\"If this hasn't been examined recently, a look at gender/racial breakdown of 1) NTT faculty vs TT faculty, 2) department heads (maybe centers as well), 3) other leadership roles, 4) student composition, and why these vary if they do, and what that represents to students looking to stay in public health academia.\"</li>
+  <li>\"Old boy/new boy networks of power, exclusion and lack of transparency. Solutions to change the inequitable old boy/new boy dynamics.\"</li>
+</ul>",
+
+
+)
+
+# Render as an HTML table
+fs_issues %>%
+  kbl(format = "html",
+      escape = FALSE,  # allow HTML in cells
+      align = "lcl",
+      caption = "Summary of Topics for the Faculty Senate Over the Next Two Years") %>%
+  kable_styling(bootstrap_options = c("hover", "condensed", "bordered"),
+                full_width = FALSE,
+                position = "center") %>%
+  column_spec(1, width = "5em") %>%  # Theme column
+  column_spec(2, width = "15em") %>%  # Description column
+  column_spec(3, width = "50em")      # Quote column
+
+```
+
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+# 2) Tokenize into words, weight by your Count column
+q210_words <- q210_data %>%
+  unnest_tokens(word, Level) %>%
+  anti_join(stop_words, by = "word") %>%     # remove common stop words
+  filter(word != "senate") %>% 
+  filter(word != "1") %>%   
+  filter(word != "2") %>% 
+  filter(word != "3") %>% 
+  filter(word != "4") %>% 
+  filter(word != "faculty") %>%  # <— drop “based”
+  count(word, wt = Count, sort = TRUE)
+
+# 3) Remove stop words
+data("stop_words")
+q210_words_nostop <- q210_words %>%
+  anti_join(stop_words, by = "word")
+
+# 4) Draw the wordcloud
+set.seed(2025)  # for reproducibility
+with(
+  q210_words_nostop,
+  wordcloud(
+    words      = word,
+    freq       = n,
+    max.words  = 100,               # top 100 words
+    random.order = FALSE,           # largest words in center
+    colors     = brewer.pal(8, "Dark2")
+  )
+)
+```
+
+
+## 8. What topics or issues would like addressed in future Faculty Senate annual surveys?
+
+
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+q211_data <- word_qs %>%
+  filter(Question == "_v211")
+
+q211_words <- q211_data %>%
+  unnest_tokens(word, Level) %>%
+  anti_join(stop_words, by = "word") %>%     # remove common stop words
+  filter(word != "faculty") %>%   
+  filter(word != "senate") %>%   # <— drop “based”
+  count(word, wt = Count, sort = TRUE)
+
+# 3) Compute total words (after stop‐word & “based” removal)
+q211_total <- sum(q211_words$n)
+
+# 4) Compute relative frequency
+q211_freq <- q211_words %>%
+  mutate(freq = n / q211_total)
+
+# 5) Plot top 10 non-stop, non-“based” words
+top10_q211 <- q211_freq %>% slice_max(n, n = 10)
+ggplot(top10_q211, aes(x = reorder(word, n), y = n)) +
+  geom_col(fill = "darkviolet") +
+  coord_flip() +
+  labs(
+    title = "Top 10 Words Used in the Responses",
+    x     = "Word",
+    y     = "Count"
+  ) 
+```
+
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+# Summarize key themes for future Faculty Senate surveys
+fs_future <- tribble(
+  ~Theme,                          ~Description,                                                                    ~Example,
+  
+  "Survey Design & Scope",        
+  "Refine question flow, include missing demographics, skip options, open‐ended fields",  
+  "<ul>
+    <li>\"I notice that disability and LGBTQ status were left off of the demographic questions...\"</li>
+    <li>\"Be more inclusive of Research Associate roles...\"</li>
+    <li>\"It would be nice to see some IDARE questions included in future faculty pulse surveys.\"</li>
+  </ul>",
+
+  "Compensation & Benefits",      
+  "Transparent salary scales, equity across ranks/tracks, health insurance, COL adjustments",  
+  "<ul>
+    <li>\"Public information on salary distribution and pay gaps by rank, title, gender, years.\"</li>
+  </ul>",
+
+  "Work–Life Balance, Well-Being, Community",
+  "Physical/mental health support, realistic workload, time-use transparency, resilience",  
+  "<ul>
+    <li>\"Work-life balance and vacation/sick time. Unlimited days off leaves us vulnerable to exploitation.\"</li>
+    <li>\"Including more aspects of belonging and inclusivity.\"</li>
+  </ul>",
+
+  "DEI & Equity",                  
+  "Assess inclusion, pay gaps by gender/race, complaints mechanism, belonging metrics",  
+  "<ul>
+    <li>\"Equity and inclusion for minority faculty, especially for promotions.\"</li>
+    <li>\"Faculty knowledge, need, and acceptance of DEI policies and initiatives.\"</li>
+    <li>\"Landscape of DEI in the school. Where can we improve support in this area?\"</li>
+  </ul>",
+
+  "Teaching & Student Support",    
+  "Course/term length feedback, TA support, advising load, student interaction quality",  
+  "<ul>
+    <li>\"Survey satisfaction with current course term length, grading of students….\"</li>
+    <li>\"Broad educational topics like building curricula in the presence of AI tools.\"</li>
+  </ul>",
+
+  "Research Funding & CBA Impacts",
+  "Measure grant-funding pressures, CBA support for PhD stipends, planning for cuts",  
+  "<ul>
+    <li>\"How many faculty have funding to support PhD CBA requirements?\"</li>
+  </ul>",
+
+  "Technology & Innovation",       
+  "Access to AI/IT tools, automate admin tasks, hybrid/virtual teaching models",  
+  "<ul>
+    <li>\"Access to AI tools.\"</li>
+  </ul>"
+)
+
+# Render as an HTML table for easy presentation
+fs_future %>%
+  kbl(format = "html",
+      escape = FALSE,  # allow HTML formatting
+      align = "lcl",
+      caption = "Summary of Topics for Future Faculty Senate Annual Surveys") %>%
+  kable_styling(bootstrap_options = c("hover", "condensed", "bordered"),
+                full_width = FALSE,
+                position = "center") %>%
+  column_spec(1, width = "5em") %>%  # Theme column
+  column_spec(2, width = "15em") %>%  # Description column
+  column_spec(3, width = "50em")      # Quote column
+
+
+```
+
+
+
+## 9. What additional feedback do you have about the workload, roles, responsibilities, and rewards of non-tenure-track faculty at JHSPH?
+
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+library(tibble)
+library(kableExtra)
+
+# Build the summary table for NTT workload/roles feedback
+qual_table_ntt <- tribble(
+  ~Theme,                            ~Description,                                                                 ~Quote,
+  
+"Respect & Compensation Equity",   
+"Call for equal pay, salary transparency, and recognition for NTT contributions",  
+"<ul>
+  <li>\"Given similar workload, teaching and research, non-tenure track should get the same salary.\"</li>
+  <li>\"Hopkins is a pretty terrible place to be as NT faculty... Our salaries are lower - even though we do the same, and sometimes more, work as TT faculty - and opportunities are less.\"</li>
+  <li>\"I really enjoy my interactions with students but feel like I was not adequately compensated for my contributions to the academic program over the years.\"</li>
+</ul>",
+
+
+  "Career Advancement & Clear Roles", 
+  "Need for transparent promotion pathways and clearly defined expectations/roles",     
+  "<ul>
+    <li>\"Give us clear and measurable work expectations and targets for promotion.\"</li>
+    <li>\"It would be helpful to have more clarity on expectations and typical workload and promotion criteria at all ranks.\"</li>
+  </ul>",
+
+  "Administrative Support & Balance", 
+  "Reduce administrative burden and clarify workload distribution across tasks",              
+  "<ul>
+    <li>\"Currently workloads are way too much doing the job of the finance team in my department.\"</li>
+    <li>\"Percent effort is a trap. It is not tied to a realistic number of weekly hours.\"</li>
+  </ul>",
+
+  "Flexibility & Work–Life Balance",  
+  "Value the lighter, flexible workload and support boundaries around time off",                  
+  "<ul>
+    <li>\"I appreciate the flexibility in devoting my time to research because it’s what I love.\"</li>
+    <li>\"I appreciate the lighter, more flexible workload that being NTT allows compared to TT.\"</li>
+  </ul>",
+
+  "Discretionary & Resource Access",  
+  "Increase general-fund and discretionary support, and shared equipment/resources",             
+  "<ul>
+    <li>\"General funds should be a larger share of effort.\"</li>
+    <li>\"More mechanisms to fund discretionary and administrative support are needed.\"</li>
+  </ul>",
+
+  "Departmental Variability",         
+  "Recognize the diversity of NTT roles across departments; avoid one-size-fits-all policies",   
+  "<ul>
+    <li>\"NTT faculty vary hugely from one department to another—there’s really no one size fits all.\"</li>
+    <li>\"There is incredible variability across departments that I find concerning.\"</li>
+  </ul>",
+
+  "Teaching Opportunities",  
+  "Create more transparent, fair teaching assignments aligned with expertise and interests",  
+  "<ul>
+    <li>\"I do enjoy teaching and I would enjoy picking up another class or two... but it is not clear how those opportunities present themselves.\"</li>
+    <li>\"Big mistake was no longer allowing Research Associates to advise... This increased the burden of advising for other faculty.\"</li>
+    <li>\"It would be nice to have opportunities to teach, collaborate with others, and engage in activities outside of primary grants.\"</li>
+  </ul>"
+)
+
+# Render as an HTML table for easy presentation
+qual_table_ntt %>%
+  kbl(format = "html",
+      escape = FALSE,  # allow HTML formatting
+      align = "lcl",
+      caption = "Summary of NTT Faculty Feedback Themes and Representative Quotes") %>%
+  kable_styling(bootstrap_options = c("hover", "condensed", "bordered"),
+                full_width = FALSE,
+                position = "center") %>%
+  column_spec(1, width = "5em") %>%  # Theme column
+  column_spec(2, width = "15em") %>%  # Description column
+  column_spec(3, width = "50em")      # Quote column
+
+
+```
+
+
+## 10. What suggestions do you have for BSPH regarding the qualities you think are important when identifying the next Dean?
+
+
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+
+library(dplyr)
+library(tibble)
+library(kableExtra)
+
+# Build the expanded summary table with bullet-point quotes
+dean_table <- tribble(
+  ~Theme,                          ~Description,                                                                  ~Quote,
+  
+  "Equity & Advocacy",             
+  "Champion equity across ranks; stand up for faculty needs",                    
+  "<ul>
+    <li>“A powerful disruptor who will prioritize equity instead of adopting current systems.”</li>
+    <li>“Has to be someone who can advocate for the faculty and for our school within the broader university and within the broader public health community.”</li>
+    <li>“Commitment to IDARE and to standing up for public health against new gov't administration that is anti-public-health.”</li>
+  </ul>",
+
+  "Communication & Collaboration", 
+  "Excellent communicator; fosters collaboration and community",                  
+  "<ul>
+    <li>“Ability and interest in fostering transdisciplinary research and continue to break down silos between departments.”</li>
+    <li>“Able to promote multi and transdisciplinary work.”</li>
+  </ul>",
+
+  "Financial Stewardship",         
+  "Strong fundraising ability; financial acumen to reduce soft-money reliance",  
+  "<ul>
+    <li>“Ability to raise money for the school to reduce over-reliance on grant funding.”</li>
+    <li>“Important that they have experience in soft money environments similar to BSPH to understand the experiences of faculty.”</li>
+    <li>“Someone who will better understand the funding concerns and pressures of faculty.”</li>
+  </ul>",
+
+  "Visionary Leadership",          
+  "Clear, compelling vision for BSPH’s future and strategic direction",           
+  "<ul>
+    <li>“The next Dean should have a clear vision for the School and its role in the world.”</li>
+    <li>“We need an internationally recognized and respected leader; someone who will be visionary and inspiring. Public health is in the spotlight and we need to deliver at BSPH.”</li>
+    <li>“Ideally the next Dean work have a strong understanding of the academic 'system' but a vision for how to bring BSPH into the new world... It would be great to have a dean with a strong vision for how BSPH would stay competitive.”</li>
+  </ul>",
+
+  "Operational Excellence",        
+  "Improve administrative, HR, and grant management systems; cut red tape",      
+  "<ul>
+    <li>“Improve administrative and financial support for grant making and management.”</li>
+    <li>“Good administrator — straighten out HR, and help standardize or at least share policies and procedures across departments.”</li>
+  </ul>",
+
+  "Policy & External Impact",
+  "Drive research‑to‑policy translation and elevate public health leadership nationally",
+  "<ul>
+    <li>“A strategy for translating research findings more readily into policy and change at the local and federal level would be desirable, too.”</li>
+    <li>“Someone who will be a national leader in policy discussions impacting public health.”</li>
+    <li>“Someone that can place public health research and practice from BSPH in the public eye in a way that is transparent and trust-building.”</li>
+  </ul>",
+
+  "Preferred Background and Traits",
+  "Preferences on internal vs external, research focus, and leadership background",
+  "<ul>
+    <li>“Orientation toward education and research. External person to bring experience from elsewhere, with strong research credentials, non-physician.”</li>
+    <li>“Someone who has experience working in both academia, practice, and nonprofit/think-tank type research roles, so they have a diversity of work experiences.”</li>
+    <li>“Do a better job at identifying external candidates.”</li>
+  </ul>"
+)
+
+# Render as an HTML table
+dean_table %>%
+  kbl(format = "html",
+      align = "lcl",
+      escape = FALSE,
+      caption = "Summary of Suggested Qualities for the Next Dean") %>%
+  kable_styling(bootstrap_options = c("hover", "condensed", "bordered"),
+                full_width = FALSE,
+                position = "center") %>%
+  column_spec(1, width = "5em") %>%  # Theme column
+  column_spec(2, width = "15em") %>%  # Description column
+  column_spec(3, width = "50em")      # Quote column
+
+
+```
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+q213_data <- word_qs %>%
+  filter(Question == "_v213")
+
+# 2) Tokenize into words, weight by your Count column
+q213_words <- q213_data %>%
+  unnest_tokens(word, Level) %>%
+  filter(word != "bsph") %>%  
+  filter(word != "2") %>% 
+  filter(word != "1") %>% 
+  filter(word != "3") %>% 
+  filter(word != "4") %>% 
+  filter(word != "public") %>%  
+    filter(word != "experience") %>%  
+  filter(word != "university") %>%  
+  filter(word != "school") %>%  
+  filter(word != "health") %>%  
+  filter(word != "dean") %>% 
+  count(word, wt = Count, sort = TRUE)
+
+# 3) Remove stop words
+data("stop_words")
+q213_words_nostop <- q213_words %>%
+  anti_join(stop_words, by = "word")
+
+# 4) Draw the wordcloud
+set.seed(2025)  # for reproducibility
+with(
+  q213_words_nostop,
+  wordcloud(
+    words      = word,
+    freq       = n,
+    max.words  = 100,               # top 100 words
+    random.order = FALSE,           # largest words in center
+    colors     = brewer.pal(8, "Dark2"),
+      scale      = c(5, 0.25)  # make words bigger!
+  )
+)
+```

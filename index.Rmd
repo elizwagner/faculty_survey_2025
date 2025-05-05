@@ -1,0 +1,99 @@
+---
+title: ""
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(readxl)
+library(dplyr)
+library(ggplot2)
+library(stringr)
+library(tidyr)
+library(knitr)
+library(kableExtra)
+library(purrr)
+library(broom)
+library(tidytext)
+library(wordcloud)
+library(RColorBrewer)
+```
+
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+word_qs <- read_excel("Word_questions.xlsx")
+```
+
+
+<div style="text-align: center;">
+<h1>Welcome!</h1>
+</div>
+
+
+<div style="text-align: center;">
+
+*This site presents a set of summaries from the 2025 faculty survey.*
+
+</div>
+
+
+<div style="text-align: center;">
+
+*Explore the sections below to learn about responses on demographics, job satisfaction, equity, and more.*
+
+</div>
+
+
+<div style="text-align: left;">
+<h1>Sections:</h1>
+</div>
+
+- [Proportions of Responses](proportions.html): Compare response proportions among the overall sample, Tenure Track and Non-tenure Track, and among different groups that are Non-tenure Track. Questions are grouped as per original survey sections. 
+    
+    
+
+- [Differences Between Groups](differences.html): Tests of differences between Tenure and Non-Tenure respondents. 
+    
+    
+
+- [Free-write Responses](free-write.html): Summaries of what people wrote in the free-write responses. 
+
+
+- [General Information](gen-info.html): Summary of survey times, completion rates, and sample sizes.
+
+
+<div style="text-align: center;">
+
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+# 2) Tokenize into words, weight by your Count column
+words <- word_qs %>%
+  unnest_tokens(word, Level) %>%
+  filter(word != "5") %>%  
+  filter(word != "1") %>%  
+    filter(word != "3") %>% 
+    filter(word != "4") %>% 
+  filter(word != "2") %>%  
+  filter(word != "e.g") %>% 
+  filter(word != "100") %>% 
+  count(word, wt = Count, sort = TRUE)
+
+# 3) Remove stop words
+data("stop_words")
+words_nostop <- words %>%
+  anti_join(stop_words, by = "word")
+
+# 4) Draw the wordcloud
+set.seed(2025)  # for reproducibility
+with(
+  words_nostop,
+ wordcloud(
+  words      = word,
+  freq       = n,
+  max.words  = 200,
+  random.order = FALSE,
+  colors     = brewer.pal(8, "Dark2"),
+  scale      = c(7, 0.5)  # make words bigger!
+)
+
+)
+```

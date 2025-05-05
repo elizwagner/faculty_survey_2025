@@ -1,0 +1,1122 @@
+---
+title: Difference in Proportions Across Groups
+output:
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+```{r setup, include=FALSE}
+library(readxl)
+library(dplyr)
+library(ggplot2)
+library(stringr)
+library(tidyr)
+library(knitr)
+library(kableExtra)
+library(purrr)
+library(broom)
+library(tidytext)
+library(wordcloud)
+library(RColorBrewer)
+
+# Set global ggplot theme with extra top margin, centered, full-width, bold titles
+theme_set(
+  theme_minimal() +
+    theme(
+      plot.margin = margin(t = 30, r = 10, b = 10, l = 10),
+      plot.title.position = "plot",
+      plot.title = element_text(hjust = 0.5, face = "bold"),
+      plot.subtitle = element_text(hjust = 0.5),  # Center the subtitle
+      legend.position = "none"  # Hide legend globally
+    )
+)
+
+
+
+# Load data
+all_responses_all_questions <- read_excel("all_responses_all_questions.xlsx")
+
+# Reshape to long format including counts and proportions
+all_responses_all_questions_long <- all_responses_all_questions %>%
+  select(
+    Question, Category, Label.y, Level,
+    Count_overall, Count_tenure, Count_nontenure,
+    Proportion_nonNA_overall, Proportion_nonNA_tenure, Proportion_nonNA_nontenure
+  ) %>%
+  pivot_longer(
+    cols = starts_with("Count_") | starts_with("Proportion_nonNA_"),
+    names_to = c(".value", "Group"),
+    names_pattern = "(.*)_(overall|tenure|nontenure)"
+  ) %>%
+  mutate(
+    Group = recode(Group,
+      "overall"    = "Overall",
+      "tenure"     = "Tenure Track",
+      "nontenure"  = "Non-tenure Track"
+    ),
+    Group = factor(Group, levels = c("Overall", "Tenure Track", "Non-tenure Track"))
+  )
+
+# Define group colors
+group_colors <- c(
+  "Overall"          = "#1F78B4",  # dark blue
+  "Tenure Track"     = "#E66101",  # dark orange
+  "Non-tenure Track" = "#4DAF4A"   # dark green
+)
+
+```
+
+*The following analyses only include questions with statistically significant differences between responses in groups at the 0.05 alpha level using Chi Square and Fisher's Exact tests. Difference in proportions tests were then applied to get a general idea of which category had significant differences.*
+
+## Tenure Track and Non-tenure Track
+
+
+<div style="background-color: black; color: white; padding: 10px; margin-bottom: 10px;">
+<h3>Rank and Title</h3>
+</div>
+
+
+
+```{r, fig.height = 10, fig.width = 7, echo=FALSE, warning=FALSE, message=FALSE}
+# Define the specific questions you want
+selected_questions <- c("_v8", "_v9")
+
+# Filter for Rank/Title category, exclude Level == "NA", exclude 'Other - Text', and include only selected questions
+rank_title_data <- all_responses_all_questions_long %>%
+  filter(
+    Category == "Rank/Title",
+    Level != "NA",
+    !str_detect(Label.y, "Other - Text"),
+    Question %in% selected_questions
+  )
+
+# Step 1: Run chi-squared or Fisher test per question, keep significant ones
+unique_questions <- unique(rank_title_data$Question)
+
+chi_results <- list()
+
+for (q in unique_questions) {
+  
+  subset <- rank_title_data %>%
+    filter(Question == q, Group %in% c("Tenure Track", "Non-tenure Track"))
+  
+  tab <- subset %>%
+    select(Level, Group, Count) %>%
+    group_by(Level, Group) %>%
+    summarise(Total = sum(Count), .groups = "drop") %>%
+    pivot_wider(names_from = Group, values_from = Total, values_fill = 0)
+  
+  if (nrow(tab) >= 2) {
+    mat <- as.matrix(tab[, c("Tenure Track", "Non-tenure Track")])
+    rownames(mat) <- tab$Level
+    
+    test <- if (any(chisq.test(mat)$expected < 5)) {
+      fisher.test(mat)
+    } else {
+      chisq.test(mat)
+    }
+    
+    if (test$p.value < 0.05) {
+      chi_results[[q]] <- list(
+        question_label = unique(subset$Label.y),
+        data = tab,
+        total_TT = sum(tab$`Tenure Track`),
+        total_NTT = sum(tab$`Non-tenure Track`)
+      )
+    }
+  }
+}
+```
+
+
+```{r, fig.height = 10, fig.width = 7, echo=FALSE, warning=FALSE, message=FALSE}
+# Step 2: For significant questions, run pairwise proportion tests
+pairwise_list <- list()
+
+for (entry in chi_results) {
+  tab <- entry$data
+  tt_total <- entry$total_TT
+  ntt_total <- entry$total_NTT
+  
+  pvals <- map_dbl(1:nrow(tab), function(i) {
+    prop.test(x = c(tab$`Tenure Track`[i], tab$`Non-tenure Track`[i]),
+              n = c(tt_total, ntt_total))$p.value
+  })
+  
+  adj_pvals <- p.adjust(pvals, method = "holm")
+  
+  pairwise_list[[entry$question_label]] <- data.frame(
+    Question = entry$question_label,
+    Response = tab$Level,
+    `TT Count` = tab$`Tenure Track`,
+    `NTT Count` = tab$`Non-tenure Track`,
+    `Raw p-value` = round(pvals, 3)
+  )
+}
+
+# Combine all pairwise results into a single dataframe
+final_table <- bind_rows(pairwise_list) %>%
+  arrange(Question, Response) %>%
+  rename(
+    `TT Count`    = TT.Count,
+    `NTT Count`   = NTT.Count,
+    `P-value` = Raw.p.value
+  ) %>%
+  select(-Question)  # DROP the Question column (will use pack_rows)
+
+# Create base kable
+kbl_obj <- kbl(final_table, format = "html", digits = 4, align = "c") %>%
+  kable_styling(
+    bootstrap_options = c("hover", "condensed", "bordered"),
+    full_width = FALSE,
+    position = "center"
+  )
+
+# Add grouped row blocks by Question (from original data)
+unique_questions <- unique(bind_rows(pairwise_list)$Question)
+start_row <- 1
+
+for (q in unique_questions) {
+  n_rows <- sum(bind_rows(pairwise_list)$Question == q)
+  kbl_obj <- kbl_obj %>%
+    pack_rows(group_label = q, start_row, start_row + n_rows - 1, bold = TRUE)
+  start_row <- start_row + n_rows
+}
+
+# Print final table
+kbl_obj
+```
+
+
+
+<div style="background-color: black; color: white; padding: 10px; margin-bottom: 10px;">
+<h3>Retitling Process</h3>
+</div>
+
+
+
+```{r, fig.height = 10, fig.width = 7, echo=FALSE, warning=FALSE, message=FALSE}
+
+# Filter for Rank/Title category, exclude Level == "NA", exclude 'Other - Text', and include only selected questions
+retitling_data <- all_responses_all_questions_long %>%
+  filter(
+    Category == "Retitling Process",
+    Level != "NA",
+    !str_detect(Label.y, "Other - Text")
+  )
+
+# Step 1: Run chi-squared or Fisher test per question, keep significant ones
+unique_questions <- unique(retitling_data$Question)
+
+chi_results <- list()
+
+for (q in unique_questions) {
+  
+  subset <- retitling_data %>%
+    filter(Question == q, Group %in% c("Tenure Track", "Non-tenure Track"))
+  
+  tab <- subset %>%
+    select(Level, Group, Count) %>%
+    group_by(Level, Group) %>%
+    summarise(Total = sum(Count), .groups = "drop") %>%
+    pivot_wider(names_from = Group, values_from = Total, values_fill = 0)
+  
+  if (nrow(tab) >= 2) {
+    mat <- as.matrix(tab[, c("Tenure Track", "Non-tenure Track")])
+    rownames(mat) <- tab$Level
+    
+    test <- if (any(chisq.test(mat)$expected < 5)) {
+      fisher.test(mat)
+    } else {
+      chisq.test(mat)
+    }
+    
+    if (test$p.value < 0.05) {
+      chi_results[[q]] <- list(
+        question_label = unique(subset$Label.y),
+        data = tab,
+        total_TT = sum(tab$`Tenure Track`),
+        total_NTT = sum(tab$`Non-tenure Track`)
+      )
+    }
+  }
+}
+```
+
+
+```{r, fig.height = 10, fig.width = 7, echo=FALSE, warning=FALSE, message=FALSE}
+# Step 2: For significant questions, run pairwise proportion tests
+pairwise_list <- list()
+
+for (entry in chi_results) {
+  tab <- entry$data
+  tt_total <- entry$total_TT
+  ntt_total <- entry$total_NTT
+  
+  pvals <- map_dbl(1:nrow(tab), function(i) {
+    prop.test(x = c(tab$`Tenure Track`[i], tab$`Non-tenure Track`[i]),
+              n = c(tt_total, ntt_total))$p.value
+  })
+  
+  adj_pvals <- p.adjust(pvals, method = "holm")
+  
+  pairwise_list[[entry$question_label]] <- data.frame(
+    Question = entry$question_label,
+    Response = tab$Level,
+    `TT Count` = tab$`Tenure Track`,
+    `NTT Count` = tab$`Non-tenure Track`,
+    `Raw p-value` = round(pvals, 3)
+  )
+}
+
+# Combine all pairwise results into a single dataframe
+final_table <- bind_rows(pairwise_list) %>%
+  arrange(Question, Response) %>%
+  rename(
+    `TT Count`    = TT.Count,
+    `NTT Count`   = NTT.Count,
+    `P-value` = Raw.p.value
+  ) %>%
+  select(-Question)  # DROP the Question column (will use pack_rows)
+
+# Create base kable
+kbl_obj <- kbl(final_table, format = "html", digits = 4, align = "c") %>%
+  kable_styling(
+    bootstrap_options = c("hover", "condensed", "bordered"),
+    full_width = FALSE,
+    position = "center"
+  )
+
+# Add grouped row blocks by Question (from original data)
+unique_questions <- unique(bind_rows(pairwise_list)$Question)
+start_row <- 1
+
+for (q in unique_questions) {
+  n_rows <- sum(bind_rows(pairwise_list)$Question == q)
+  kbl_obj <- kbl_obj %>%
+    pack_rows(group_label = q, start_row, start_row + n_rows - 1, bold = TRUE)
+  start_row <- start_row + n_rows
+}
+
+# Print final table
+kbl_obj
+```
+
+
+
+<div style="background-color: black; color: white; padding: 10px; margin-bottom: 10px;">
+<h3>Service</h3>
+</div>
+
+
+
+```{r, fig.height = 10, fig.width = 7, echo=FALSE, warning=FALSE, message=FALSE}
+
+# Filter for Rank/Title category, exclude Level == "NA", exclude 'Other - Text', and include only selected questions
+service_data <- all_responses_all_questions_long %>%
+  filter(
+    Category == "Service",
+    Question != "_v43",
+    Level != "NA",
+    !str_detect(Label.y, "Other - Text"),
+    !str_detect(tolower(Label.y), "how many")  # excludes anything containing "how many"
+  )
+
+
+# Step 1: Run chi-squared or Fisher test per question, keep significant ones
+unique_questions <- unique(service_data$Question)
+
+chi_results <- list()
+
+for (q in unique_questions) {
+  
+  subset <- service_data %>%
+    filter(Question == q, Group %in% c("Tenure Track", "Non-tenure Track"))
+  
+  tab <- subset %>%
+    select(Level, Group, Count) %>%
+    group_by(Level, Group) %>%
+    summarise(Total = sum(Count), .groups = "drop") %>%
+    pivot_wider(names_from = Group, values_from = Total, values_fill = 0)
+  
+  if (nrow(tab) >= 2) {
+    mat <- as.matrix(tab[, c("Tenure Track", "Non-tenure Track")])
+    rownames(mat) <- tab$Level
+    
+    test <- if (any(chisq.test(mat)$expected < 5)) {
+      fisher.test(mat)
+    } else {
+      chisq.test(mat)
+    }
+    
+    if (test$p.value < 0.05) {
+      chi_results[[q]] <- list(
+        question_label = unique(subset$Label.y),
+        data = tab,
+        total_TT = sum(tab$`Tenure Track`),
+        total_NTT = sum(tab$`Non-tenure Track`)
+      )
+    }
+  }
+}
+```
+
+
+```{r, fig.height = 10, fig.width = 7, echo=FALSE, warning=FALSE, message=FALSE}
+# Step 2: For significant questions, run pairwise proportion tests
+pairwise_list <- list()
+
+for (entry in chi_results) {
+  tab <- entry$data
+  tt_total <- entry$total_TT
+  ntt_total <- entry$total_NTT
+  
+  pvals <- map_dbl(1:nrow(tab), function(i) {
+    prop.test(x = c(tab$`Tenure Track`[i], tab$`Non-tenure Track`[i]),
+              n = c(tt_total, ntt_total))$p.value
+  })
+  
+  adj_pvals <- p.adjust(pvals, method = "holm")
+  
+  pairwise_list[[entry$question_label]] <- data.frame(
+    Question = entry$question_label,
+    Response = tab$Level,
+    `TT Count` = tab$`Tenure Track`,
+    `NTT Count` = tab$`Non-tenure Track`,
+    `Raw p-value` = round(pvals, 3)
+  )
+}
+
+# Combine all pairwise results into a single dataframe
+final_table <- bind_rows(pairwise_list) %>%
+  arrange(Question, Response) %>%
+  rename(
+    `TT Count`    = TT.Count,
+    `NTT Count`   = NTT.Count,
+    `P-value` = Raw.p.value
+  ) %>%
+  select(-Question)  # DROP the Question column (will use pack_rows)
+
+# Create base kable
+kbl_obj <- kbl(final_table, format = "html", digits = 4, align = "c") %>%
+  kable_styling(
+    bootstrap_options = c("hover", "condensed", "bordered"),
+    full_width = FALSE,
+    position = "center"
+  )
+
+# Add grouped row blocks by Question (from original data)
+unique_questions <- unique(bind_rows(pairwise_list)$Question)
+start_row <- 1
+
+for (q in unique_questions) {
+  n_rows <- sum(bind_rows(pairwise_list)$Question == q)
+  kbl_obj <- kbl_obj %>%
+    pack_rows(group_label = q, start_row, start_row + n_rows - 1, bold = TRUE)
+  start_row <- start_row + n_rows
+}
+
+# Print final table
+kbl_obj
+```
+
+```{r, fig.height = 10, fig.width = 7, echo=FALSE, warning=FALSE, message=FALSE}
+# Define the specific questions you want
+selected_questions <- c("_v43")
+
+# Filter for Rank/Title category, exclude Level == "NA", exclude 'Other - Text', and include only selected questions
+serv_data <- all_responses_all_questions_long %>%
+  filter(
+    Category == "Service",
+    Level != "NA",
+    !str_detect(Label.y, "Other - Text"),
+    Question %in% selected_questions
+  )
+
+# Step 1: Run chi-squared or Fisher test per question, keep significant ones
+unique_questions <- unique(serv_data$Question)
+
+chi_results <- list()
+
+for (q in unique_questions) {
+  
+  subset <- serv_data %>%
+    filter(Question == q, Group %in% c("Tenure Track", "Non-tenure Track"))
+  
+  tab <- subset %>%
+    select(Level, Group, Count) %>%
+    group_by(Level, Group) %>%
+    summarise(Total = sum(Count), .groups = "drop") %>%
+    pivot_wider(names_from = Group, values_from = Total, values_fill = 0)
+  
+  if (nrow(tab) >= 2) {
+    mat <- as.matrix(tab[, c("Tenure Track", "Non-tenure Track")])
+    rownames(mat) <- tab$Level
+    
+    test <- if (any(chisq.test(mat)$expected < 5)) {
+      fisher.test(mat)
+    } else {
+      chisq.test(mat)
+    }
+    
+    if (test$p.value < 0.05) {
+      chi_results[[q]] <- list(
+        question_label = unique(subset$Label.y),
+        data = tab,
+        total_TT = sum(tab$`Tenure Track`),
+        total_NTT = sum(tab$`Non-tenure Track`)
+      )
+    }
+  }
+}
+```
+
+
+```{r, fig.height = 10, fig.width = 7, echo=FALSE, warning=FALSE, message=FALSE}
+# Step 2: For significant questions, run pairwise proportion tests
+pairwise_list <- list()
+
+for (entry in chi_results) {
+  tab <- entry$data
+  tt_total <- entry$total_TT
+  ntt_total <- entry$total_NTT
+  
+  pvals <- map_dbl(1:nrow(tab), function(i) {
+    prop.test(x = c(tab$`Tenure Track`[i], tab$`Non-tenure Track`[i]),
+              n = c(tt_total, ntt_total))$p.value
+  })
+  
+  adj_pvals <- p.adjust(pvals, method = "holm")
+  
+  pairwise_list[[entry$question_label]] <- data.frame(
+    Question = entry$question_label,
+    Response = tab$Level,
+    `TT Count` = tab$`Tenure Track`,
+    `NTT Count` = tab$`Non-tenure Track`,
+    `Raw p-value` = round(pvals, 3)
+  )
+}
+
+# Combine all pairwise results into a single dataframe
+final_table <- bind_rows(pairwise_list) %>%
+  arrange(Question, Response) %>%
+  rename(
+    `TT Count`    = TT.Count,
+    `NTT Count`   = NTT.Count,
+    `P-value` = Raw.p.value
+  ) %>%
+  select(-Question)  # DROP the Question column (will use pack_rows)
+
+# Create base kable
+kbl_obj <- kbl(final_table, format = "html", digits = 4, align = "c") %>%
+  kable_styling(
+    bootstrap_options = c("hover", "condensed", "bordered"),
+    full_width = FALSE,
+    position = "center"
+  )
+
+# Add grouped row blocks by Question (from original data)
+unique_questions <- unique(bind_rows(pairwise_list)$Question)
+start_row <- 1
+
+for (q in unique_questions) {
+  n_rows <- sum(bind_rows(pairwise_list)$Question == q)
+  kbl_obj <- kbl_obj %>%
+    pack_rows(group_label = q, start_row, start_row + n_rows - 1, bold = TRUE)
+  start_row <- start_row + n_rows
+}
+
+# Print final table
+kbl_obj
+```
+
+
+
+<div style="background-color: black; color: white; padding: 10px; margin-bottom: 10px;">
+<h3>Professional development/promotion</h3>
+</div>
+
+
+
+
+```{r, fig.height = 10, fig.width = 7, echo=FALSE, warning=FALSE, message=FALSE}
+
+# Filter for Rank/Title category, exclude Level == "NA", exclude 'Other - Text', and include only selected questions
+profdev_data <- all_responses_all_questions_long %>%
+  filter(
+    Category == "Professional development and promotion",
+    Level != "NA",
+    !str_detect(Label.y, "Other - Text"),
+    !str_detect(tolower(Label.y), "how many")  # excludes anything containing "how many"
+  )
+
+# Step 1: Run chi-squared or Fisher test per question, keep significant ones
+unique_questions <- unique(profdev_data$Question)
+
+chi_results <- list()
+
+for (q in unique_questions) {
+  
+  subset <- profdev_data %>%
+    filter(Question == q, Group %in% c("Tenure Track", "Non-tenure Track"))
+  
+  tab <- subset %>%
+    select(Level, Group, Count) %>%
+    group_by(Level, Group) %>%
+    summarise(Total = sum(Count), .groups = "drop") %>%
+    pivot_wider(names_from = Group, values_from = Total, values_fill = 0)
+  
+  if (nrow(tab) >= 2) {
+    mat <- as.matrix(tab[, c("Tenure Track", "Non-tenure Track")])
+    rownames(mat) <- tab$Level
+    
+    test <- if (any(chisq.test(mat)$expected < 5)) {
+      fisher.test(mat)
+    } else {
+      chisq.test(mat)
+    }
+    
+    if (test$p.value < 0.05) {
+      chi_results[[q]] <- list(
+        question_label = unique(subset$Label.y),
+        data = tab,
+        total_TT = sum(tab$`Tenure Track`),
+        total_NTT = sum(tab$`Non-tenure Track`)
+      )
+    }
+  }
+}
+```
+
+
+```{r, fig.height = 10, fig.width = 7, echo=FALSE, warning=FALSE, message=FALSE}
+# Step 2: For significant questions, run pairwise proportion tests
+pairwise_list <- list()
+
+for (entry in chi_results) {
+  tab <- entry$data
+  tt_total <- entry$total_TT
+  ntt_total <- entry$total_NTT
+  
+  pvals <- map_dbl(1:nrow(tab), function(i) {
+    prop.test(x = c(tab$`Tenure Track`[i], tab$`Non-tenure Track`[i]),
+              n = c(tt_total, ntt_total))$p.value
+  })
+  
+  adj_pvals <- p.adjust(pvals, method = "holm")
+  
+  pairwise_list[[entry$question_label]] <- data.frame(
+    Question = entry$question_label,
+    Response = tab$Level,
+    `TT Count` = tab$`Tenure Track`,
+    `NTT Count` = tab$`Non-tenure Track`,
+    `Raw p-value` = round(pvals, 3)
+  )
+}
+
+# Combine all pairwise results into a single dataframe
+final_table <- bind_rows(pairwise_list) %>%
+  arrange(Question, Response) %>%
+  rename(
+    `TT Count`    = TT.Count,
+    `NTT Count`   = NTT.Count,
+    `P-value` = Raw.p.value
+  ) %>%
+  select(-Question)  # DROP the Question column (will use pack_rows)
+
+# Create base kable
+kbl_obj <- kbl(final_table, format = "html", digits = 4, align = "c") %>%
+  kable_styling(
+    bootstrap_options = c("hover", "condensed", "bordered"),
+    full_width = FALSE,
+    position = "center"
+  )
+
+# Add grouped row blocks by Question (from original data)
+unique_questions <- unique(bind_rows(pairwise_list)$Question)
+start_row <- 1
+
+for (q in unique_questions) {
+  n_rows <- sum(bind_rows(pairwise_list)$Question == q)
+  kbl_obj <- kbl_obj %>%
+    pack_rows(group_label = q, start_row, start_row + n_rows - 1, bold = TRUE)
+  start_row <- start_row + n_rows
+}
+
+# Print final table
+kbl_obj
+```
+
+
+
+<div style="background-color: black; color: white; padding: 10px; margin-bottom: 10px;">
+<h3>Well-being</h3>
+</div>
+
+
+
+```{r, fig.height = 10, fig.width = 7, echo=FALSE, warning=FALSE, message=FALSE}
+
+# Filter for Rank/Title category, exclude Level == "NA", exclude 'Other - Text', and include only selected questions
+profdev_data <- all_responses_all_questions_long %>%
+  filter(
+    Category == "Well-being",
+    Level != "NA",
+    !str_detect(Label.y, "Other - Text"),
+    !str_detect(tolower(Label.y), "how many")  # excludes anything containing "how many"
+  )
+
+
+# Step 1: Run chi-squared or Fisher test per question, keep significant ones
+unique_questions <- unique(profdev_data$Question)
+
+chi_results <- list()
+
+for (q in unique_questions) {
+  
+  subset <- profdev_data %>%
+    filter(Question == q, Group %in% c("Tenure Track", "Non-tenure Track"))
+  
+tab <- subset %>%
+  select(Level, Group, Count) %>%
+  group_by(Level, Group) %>%
+  summarise(
+    Total = sum(Count, na.rm = TRUE),   # <— here
+    .groups = "drop"
+  ) %>%
+  pivot_wider(names_from = Group, values_from = Total, values_fill = 0)
+
+  
+  if (nrow(tab) >= 2) {
+    mat <- as.matrix(tab[, c("Tenure Track", "Non-tenure Track")])
+    rownames(mat) <- tab$Level
+    
+    test <- if (any(chisq.test(mat)$expected < 5)) {
+      fisher.test(mat)
+    } else {
+      chisq.test(mat)
+    }
+    
+    if (test$p.value < 0.05) {
+      chi_results[[q]] <- list(
+        question_label = unique(subset$Label.y),
+        data = tab,
+        total_TT = sum(tab$`Tenure Track`),
+        total_NTT = sum(tab$`Non-tenure Track`)
+      )
+    }
+  }
+}
+```
+
+
+```{r, fig.height = 10, fig.width = 7, echo=FALSE, warning=FALSE, message=FALSE}
+# Step 2: For significant questions, run pairwise proportion tests
+pairwise_list <- list()
+
+for (entry in chi_results) {
+  tab <- entry$data
+  tt_total <- entry$total_TT
+  ntt_total <- entry$total_NTT
+  
+  pvals <- map_dbl(1:nrow(tab), function(i) {
+    prop.test(x = c(tab$`Tenure Track`[i], tab$`Non-tenure Track`[i]),
+              n = c(tt_total, ntt_total))$p.value
+  })
+  
+  adj_pvals <- p.adjust(pvals, method = "holm")
+  
+  pairwise_list[[entry$question_label]] <- data.frame(
+    Question = entry$question_label,
+    Response = tab$Level,
+    `TT Count` = tab$`Tenure Track`,
+    `NTT Count` = tab$`Non-tenure Track`,
+    `Raw p-value` = round(pvals, 3)
+  )
+}
+
+# Combine all pairwise results into a single dataframe
+final_table <- bind_rows(pairwise_list) %>%
+  arrange(Question, Response) %>%
+  rename(
+    `TT Count`    = TT.Count,
+    `NTT Count`   = NTT.Count,
+    `P-value` = Raw.p.value
+  ) %>%
+  select(-Question)  # DROP the Question column (will use pack_rows)
+
+# Create base kable
+kbl_obj <- kbl(final_table, format = "html", digits = 4, align = "c") %>%
+  kable_styling(
+    bootstrap_options = c("hover", "condensed", "bordered"),
+    full_width = FALSE,
+    position = "center"
+  )
+
+# Add grouped row blocks by Question (from original data)
+unique_questions <- unique(bind_rows(pairwise_list)$Question)
+start_row <- 1
+
+for (q in unique_questions) {
+  n_rows <- sum(bind_rows(pairwise_list)$Question == q)
+  kbl_obj <- kbl_obj %>%
+    pack_rows(group_label = q, start_row, start_row + n_rows - 1, bold = TRUE)
+  start_row <- start_row + n_rows
+}
+
+# Print final table
+kbl_obj
+```
+
+
+
+<div style="background-color: black; color: white; padding: 10px; margin-bottom: 10px;">
+<h3>Equity, morale, respect, and satisfaction</h3>
+</div>
+
+
+
+```{r, fig.height = 10, fig.width = 7, echo=FALSE, warning=FALSE, message=FALSE}
+
+# Filter for Rank/Title category, exclude Level == "NA", exclude 'Other - Text', and include only selected questions
+equity_data <- all_responses_all_questions_long %>%
+  filter(
+    Category == "Equity, morale, respect, and satisfaction",
+    Question != "_v91",
+    Question != "_v92",
+    Level != "NA",
+    !str_detect(Label.y, "Other - Text"),
+    !str_detect(tolower(Label.y), "how many")  # excludes anything containing "how many"
+  )
+
+
+# Step 1: Run chi-squared or Fisher test per question, keep significant ones
+unique_questions <- unique(equity_data$Question)
+
+chi_results <- list()
+
+for (q in unique_questions) {
+  
+  subset <- equity_data %>%
+    filter(Question == q, Group %in% c("Tenure Track", "Non-tenure Track"))
+  
+tab <- subset %>%
+  select(Level, Group, Count) %>%
+  group_by(Level, Group) %>%
+  summarise(
+    Total = sum(Count, na.rm = TRUE),   # <— here
+    .groups = "drop"
+  ) %>%
+  pivot_wider(names_from = Group, values_from = Total, values_fill = 0)
+
+  
+  if (nrow(tab) >= 2) {
+    mat <- as.matrix(tab[, c("Tenure Track", "Non-tenure Track")])
+    rownames(mat) <- tab$Level
+    
+    test <- if (any(chisq.test(mat)$expected < 5)) {
+      fisher.test(mat)
+    } else {
+      chisq.test(mat)
+    }
+    
+    if (test$p.value < 0.05) {
+      chi_results[[q]] <- list(
+        question_label = unique(subset$Label.y),
+        data = tab,
+        total_TT = sum(tab$`Tenure Track`),
+        total_NTT = sum(tab$`Non-tenure Track`)
+      )
+    }
+  }
+}
+```
+
+
+```{r, fig.height = 10, fig.width = 7, echo=FALSE, warning=FALSE, message=FALSE}
+# Step 2: For significant questions, run pairwise proportion tests
+pairwise_list <- list()
+
+for (entry in chi_results) {
+  tab <- entry$data
+  tt_total <- entry$total_TT
+  ntt_total <- entry$total_NTT
+  
+  pvals <- map_dbl(1:nrow(tab), function(i) {
+    prop.test(x = c(tab$`Tenure Track`[i], tab$`Non-tenure Track`[i]),
+              n = c(tt_total, ntt_total))$p.value
+  })
+  
+  adj_pvals <- p.adjust(pvals, method = "holm")
+  
+  pairwise_list[[entry$question_label]] <- data.frame(
+    Question = entry$question_label,
+    Response = tab$Level,
+    `TT Count` = tab$`Tenure Track`,
+    `NTT Count` = tab$`Non-tenure Track`,
+    `Raw p-value` = round(pvals, 3)
+  )
+}
+
+# Combine all pairwise results into a single dataframe
+final_table <- bind_rows(pairwise_list) %>%
+  arrange(Question, Response) %>%
+  rename(
+    `TT Count`    = TT.Count,
+    `NTT Count`   = NTT.Count,
+    `P-value` = Raw.p.value
+  ) %>%
+  select(-Question)  # DROP the Question column (will use pack_rows)
+
+# Create base kable
+kbl_obj <- kbl(final_table, format = "html", digits = 4, align = "c") %>%
+  kable_styling(
+    bootstrap_options = c("hover", "condensed", "bordered"),
+    full_width = FALSE,
+    position = "center"
+  )
+
+# Add grouped row blocks by Question (from original data)
+unique_questions <- unique(bind_rows(pairwise_list)$Question)
+start_row <- 1
+
+for (q in unique_questions) {
+  n_rows <- sum(bind_rows(pairwise_list)$Question == q)
+  kbl_obj <- kbl_obj %>%
+    pack_rows(group_label = q, start_row, start_row + n_rows - 1, bold = TRUE)
+  start_row <- start_row + n_rows
+}
+
+# Print final table
+kbl_obj
+```
+
+
+```{r, fig.height = 10, fig.width = 7, echo=FALSE, warning=FALSE, message=FALSE}
+# Define the specific questions you want
+selected_questions <- c("_v91", "_v92")
+
+# Filter for Rank/Title category, exclude Level == "NA", exclude 'Other - Text', and include only selected questions
+eq_data <- all_responses_all_questions_long %>%
+  filter(
+    Category == "Equity, morale, respect, and satisfaction",
+    Level != "NA",
+    !str_detect(Label.y, "Other - Text"),
+    Question %in% selected_questions
+  )
+
+# Step 1: Run chi-squared or Fisher test per question, keep significant ones
+unique_questions <- unique(eq_data$Question)
+
+chi_results <- list()
+
+for (q in unique_questions) {
+  
+  subset <- eq_data %>%
+    filter(Question == q, Group %in% c("Tenure Track", "Non-tenure Track"))
+  
+  tab <- subset %>%
+    select(Level, Group, Count) %>%
+    group_by(Level, Group) %>%
+    summarise(Total = sum(Count), .groups = "drop") %>%
+    pivot_wider(names_from = Group, values_from = Total, values_fill = 0)
+  
+  if (nrow(tab) >= 2) {
+    mat <- as.matrix(tab[, c("Tenure Track", "Non-tenure Track")])
+    rownames(mat) <- tab$Level
+    
+    test <- if (any(chisq.test(mat)$expected < 5)) {
+      fisher.test(mat)
+    } else {
+      chisq.test(mat)
+    }
+    
+    if (test$p.value < 0.05) {
+      chi_results[[q]] <- list(
+        question_label = unique(subset$Label.y),
+        data = tab,
+        total_TT = sum(tab$`Tenure Track`),
+        total_NTT = sum(tab$`Non-tenure Track`)
+      )
+    }
+  }
+}
+```
+
+
+```{r, fig.height = 10, fig.width = 7, echo=FALSE, warning=FALSE, message=FALSE}
+# Step 2: For significant questions, run pairwise proportion tests
+pairwise_list <- list()
+
+for (entry in chi_results) {
+  tab <- entry$data
+  tt_total <- entry$total_TT
+  ntt_total <- entry$total_NTT
+  
+  pvals <- map_dbl(1:nrow(tab), function(i) {
+    prop.test(x = c(tab$`Tenure Track`[i], tab$`Non-tenure Track`[i]),
+              n = c(tt_total, ntt_total))$p.value
+  })
+  
+  adj_pvals <- p.adjust(pvals, method = "holm")
+  
+  pairwise_list[[entry$question_label]] <- data.frame(
+    Question = entry$question_label,
+    Response = tab$Level,
+    `TT Count` = tab$`Tenure Track`,
+    `NTT Count` = tab$`Non-tenure Track`,
+    `Raw p-value` = round(pvals, 3)
+  )
+}
+
+# Combine all pairwise results into a single dataframe
+final_table <- bind_rows(pairwise_list) %>%
+  arrange(Question, Response) %>%
+  rename(
+    `TT Count`    = TT.Count,
+    `NTT Count`   = NTT.Count,
+    `P-value` = Raw.p.value
+  ) %>%
+  select(-Question)  # DROP the Question column (will use pack_rows)
+
+# Create base kable
+kbl_obj <- kbl(final_table, format = "html", digits = 4, align = "c") %>%
+  kable_styling(
+    bootstrap_options = c("hover", "condensed", "bordered"),
+    full_width = FALSE,
+    position = "center"
+  )
+
+# Add grouped row blocks by Question (from original data)
+unique_questions <- unique(bind_rows(pairwise_list)$Question)
+start_row <- 1
+
+for (q in unique_questions) {
+  n_rows <- sum(bind_rows(pairwise_list)$Question == q)
+  kbl_obj <- kbl_obj %>%
+    pack_rows(group_label = q, start_row, start_row + n_rows - 1, bold = TRUE)
+  start_row <- start_row + n_rows
+}
+
+# Print final table
+kbl_obj
+```
+
+
+
+
+<div style="background-color: black; color: white; padding: 10px; margin-bottom: 10px;">
+<h3>Effort Distribution</h3>
+</div>
+
+
+
+```{r, fig.height = 10, fig.width = 7, echo=FALSE, warning=FALSE, message=FALSE}
+
+# Filter for Rank/Title category, exclude Level == "NA", exclude 'Other - Text', and include only selected questions
+effort_data <- all_responses_all_questions_long %>%
+  filter(
+    Category == "Effort Distribution",
+    Level != "NA",
+    !str_detect(Label.y, "Other - Text"),
+    !str_detect(tolower(Label.y), "how many")  # excludes anything containing "how many"
+  )
+
+
+# Step 1: Run chi-squared or Fisher test per question, keep significant ones
+unique_questions <- unique(effort_data$Question)
+
+chi_results <- list()
+
+for (q in unique_questions) {
+  
+  subset <- effort_data %>%
+    filter(Question == q, Group %in% c("Tenure Track", "Non-tenure Track"))
+  
+  tab <- subset %>%
+    select(Level, Group, Count) %>%
+    group_by(Level, Group) %>%
+    summarise(Total = sum(Count), .groups = "drop") %>%
+    pivot_wider(names_from = Group, values_from = Total, values_fill = 0)
+  
+  if (nrow(tab) >= 2) {
+    mat <- as.matrix(tab[, c("Tenure Track", "Non-tenure Track")])
+    rownames(mat) <- tab$Level
+    
+    test <- if (any(chisq.test(mat)$expected < 5)) {
+      fisher.test(mat)
+    } else {
+      chisq.test(mat)
+    }
+    
+    if (test$p.value < 0.05) {
+      chi_results[[q]] <- list(
+        question_label = unique(subset$Label.y),
+        data = tab,
+        total_TT = sum(tab$`Tenure Track`),
+        total_NTT = sum(tab$`Non-tenure Track`)
+      )
+    }
+  }
+}
+```
+
+
+```{r, fig.height = 10, fig.width = 7, echo=FALSE, warning=FALSE, message=FALSE}
+# Step 2: For significant questions, run pairwise proportion tests
+pairwise_list <- list()
+
+for (entry in chi_results) {
+  tab <- entry$data
+  tt_total <- entry$total_TT
+  ntt_total <- entry$total_NTT
+  
+  pvals <- map_dbl(1:nrow(tab), function(i) {
+    prop.test(x = c(tab$`Tenure Track`[i], tab$`Non-tenure Track`[i]),
+              n = c(tt_total, ntt_total))$p.value
+  })
+  
+  adj_pvals <- p.adjust(pvals, method = "holm")
+  
+  pairwise_list[[entry$question_label]] <- data.frame(
+    Question = entry$question_label,
+    Response = tab$Level,
+    `TT Count` = tab$`Tenure Track`,
+    `NTT Count` = tab$`Non-tenure Track`,
+    `Raw p-value` = round(pvals, 3)
+  )
+}
+
+# Combine all pairwise results into a single dataframe
+final_table <- bind_rows(pairwise_list) %>%
+  arrange(Question, Response) %>%
+  rename(
+    `TT Count`    = TT.Count,
+    `NTT Count`   = NTT.Count,
+    `P-value` = Raw.p.value
+  ) %>%
+  select(-Question)  # DROP the Question column (will use pack_rows)
+
+# Create base kable
+kbl_obj <- kbl(final_table, format = "html", digits = 4, align = "c") %>%
+  kable_styling(
+    bootstrap_options = c("hover", "condensed", "bordered"),
+    full_width = FALSE,
+    position = "center"
+  )
+
+# Add grouped row blocks by Question (from original data)
+unique_questions <- unique(bind_rows(pairwise_list)$Question)
+start_row <- 1
+
+for (q in unique_questions) {
+  n_rows <- sum(bind_rows(pairwise_list)$Question == q)
+  kbl_obj <- kbl_obj %>%
+    pack_rows(group_label = q, start_row, start_row + n_rows - 1, bold = TRUE)
+  start_row <- start_row + n_rows
+}
+
+# Print final table
+kbl_obj
+```
